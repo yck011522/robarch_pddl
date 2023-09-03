@@ -43,8 +43,8 @@
       (BeamAtRobot ?beam) ;; Beam is already on robot
     )
     :effect (and
-      (not (BeamAtRobot ?beam)) ;; Beam no longer at storage
-      (BeamAtAssembled ?beam) ;; Beam now at robot
+      (not (BeamAtRobot ?beam)) ;; Beam no longer at robot
+      (BeamAtAssembled ?beam) ;; Beam now at assembled
       ; (increase (total-cost) 1)
     )
   )
