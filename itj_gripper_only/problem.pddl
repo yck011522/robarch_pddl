@@ -1,12 +1,12 @@
 (define (problem simple_beam_assembly)
-    (:domain itj_gripper_only)
+    (:domain itj_clamp_only)
     (:objects 
         beam1
         beam2
         gripper1 
         gripper2
-        typeA
-        typeB
+        grippertypeA
+        grippertypeB
     )
 
     (:init 
@@ -15,7 +15,6 @@
         (Beam beam2)
         (BeamAtStorage beam1)
         (BeamAtStorage beam2)
-
         ; Initial state for grippers
         (Gripper gripper1)
         (Gripper gripper2)
@@ -23,14 +22,12 @@
         (GripperAtStorage gripper2)
 
         ; Initial state for gripper types
-        (GripperType typeA)
-        (GripperType typeB)
-        (GripperOfType gripper1 typeA)
-        (GripperOfType gripper2 typeB)
+        (GripperOfType gripper1 grippertypeA)
+        (GripperOfType gripper2 grippertypeB)
 
         ; Initial state for beam requirements
-        (BeamNeedsGripperType beam1 typeA)
-        (BeamNeedsGripperType beam2 typeB)
+        (BeamNeedsGripperType beam1 grippertypeA)
+        (BeamNeedsGripperType beam2 grippertypeB)
     )
 
     (:goal 
