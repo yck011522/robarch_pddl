@@ -19,7 +19,7 @@ def dump_plan(plan, cost):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--problem', default='itj_gripper_only', 
+    parser.add_argument('--problem', default='itj_clamps', 
                         help='The name of the problem to solve')
     args = parser.parse_args()
 

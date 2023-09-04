@@ -1,34 +1,36 @@
 (define (domain itj_clamp_only)
-    (:requirements :negative-preconditions :strips :equality)
+    (:requirements :negative-preconditions :strips :equality :disjunctive-preconditions)
     (:predicates
-        ; There are thee beam position states: AtStorage, AtRobot, and AtAssembled. One and Only One is True at the same time.
-        (Beam ?beam) ;; Static - List of all Beam ID
+        ;; There are three beam position states: AtStorage, AtRobot, and AtAssembled. One and Only One is True at the same time.
+        (Beam ?beam) ;; Static - List of all beams (beam_id)
         (BeamAtStorage ?beam)
         (BeamAtRobot ?beam)
         (BeamAtAssembled ?beam)
 
-        (Gripper ?gripper) ;; Static - List of all Gripper ID
-        ; There are two gripper position states: AtStorage, AtRobot. One and Only One is True at the same time.
+        ;; There are two gripper position states: AtStorage, AtRobot. One and Only One is True at the same time.
+        (Gripper ?gripper) ;; Static - List of all grippers (gripper_id)
         (GripperAtRobot ?gripper)
         (GripperAtStorage ?gripper)
 
-        ; Conditions where a beam requires a certain gripper type
+        ;; Predicates for gripper type matching
         (BeamNeedsGripperType ?beam ?grippertype) ;; Static - List of all gripper types (can be multiple) required for each beam
-        (GripperType ?grippertype) ;; Static - List of all gripper types
         (GripperOfType ?gripper ?grippertype) ;; Static - Statement describing the type of a gripper
-
-        ; There are thee clamp position states: AtStorage, AtRobot, and AtJoint. One and Only One is True at the same time.
-        (Clamp ?clamp)
+               
+        ;; Clamps are used to assemble joints between beams
+        ;; There are three clamp position states: AtStorage, AtRobot, and AtJoint. One and Only One is True at the same time.
+        (Clamp ?clamp) ;; Static - List of clamps (clamp_id)
         (ClampAtStorage ?clamp)
         (ClampAtRobot ?clamp)
         (ClampAtJoint ?clamp ?beam1 ?beam2)
 
-        ; A Beam requires some clamps at its joints, but it demands a clamp type not a specific clamp id
-        (Joint ?beam1 ?beam2)
+        ;; Joints are defined as the intersection of two beams
+        ;; Joints are implied to have order, so (Joint ?beam1 ?beam2) is not the same as (Joint ?beam2 ?beam1)
+        ;; ?beam1 have to be assembled before ?beam2 if (Joint ?beam1 ?beam2) is declared
+        (Joint ?beam1 ?beam2) ;; Static - List of all joints (beam_id, beam_id)
+
+        ;; Predicates for clamp type matching
         (ClampOfType ?clamp ?clamptype) ;; Static
-        (BeamHasJoint ?beam ?beam1 ?beam2) ;; Static
         (JointNeedsClamp ?beam1 ?beam2 ?clamptype) ;; Static
-        (BeamClampsFulfilled ?beam) ; certified by an action
     )
 
     (:action pick_beam_with_gripper
@@ -38,58 +40,48 @@
             (BeamAtStorage ?beam)
             ;; Gripper is already on robot
             (GripperAtRobot ?gripper)
-            ;; Beam requires a certain gripper type
-            (exists
+            ;; Gripper type matching:
+            ;; There should not be a scenario where a BeamNeedsGripperType is declared
+            ;; but there is no GripperOfType that matches it
+            (not(exists
                 (?grippertype)
                 (and
-                    (Beam ?beam) ;; (type check)
-                    (Gripper ?gripper) ;; (type check)
-                    (GripperOfType ?gripper ?grippertype)
-                    (BeamNeedsGripperType ?beam ?grippertype))
-            )
+                    (BeamNeedsGripperType ?beam ?grippertype)
+                    (not(GripperOfType ?gripper ?grippertype))
+                )
+            ))
         )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
             (BeamAtRobot ?beam) ;; Beam at robot
         )
     )
-
+        
     (:action assemble_beam
-        :parameters (?beam ?gripper)
+        :parameters (?beam)
         :precondition (and
-            ;; Gripper is already on robot
-            (GripperAtRobot ?gripper)
             ;; Beam is already on robot
             (BeamAtRobot ?beam)
-            ;; Beam has all the clamps needed to assemble it
-            (BeamClampsFulfilled ?beam)
+            ;; Joints on the beam have clamps attached to them 
+            ;; Logic: There should not exist a scenario where an earlierbeam ... 
+            (not
+                (exists(?earlierbeam)
+                    (and 
+                        ;; Formed a joint with the current beam ... 
+                        (Joint ?earlierbeam ?beam)
+                        ;; and that joint is demanding some clamp (declared by JointNeedsClamp) ...
+                        (exists(?clamptype) (JointNeedsClamp ?earlierbeam ?beam ?clamptype))
+                        ;; and not a single clamp had been attached to that joint
+                        (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
+                    )
+                )
+            )
         )
         :effect (and
             (not (BeamAtRobot ?beam)) ;; Beam no longer at storage
             (BeamAtAssembled ?beam) ;; Beam now at robot
         )
     )
-
-    (:action certify_beam_clamps_fulfilled
-        :parameters (?beam)
-        :precondition (and
-            ;; There should not exist a scenario where an earlierbeam
-            (not
-                (exists(?earlierbeam)
-                    (and 
-                        ;; Formed a joint with the current beam
-                        (Joint ?earlierbeam ?beam)
-                        ;; And that not a single clamp had been attached to that joint
-                        (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
-                    )
-                )
-            )
-            (Beam ?beam)
-        )
-        :effect(and
-        (BeamClampsFulfilled ?beam))
-    )
-
 
     ;; Gripper Manipulation
     ;; --------------------
@@ -143,10 +135,13 @@
         :parameters (?clamp)
         :precondition (and
             ;; Robot is not currently holding a gripper or a clamp
-            (not
-                (exists
+            (not(exists
                     (?anytool)
                     (or (GripperAtRobot ?anytool)(ClampAtRobot ?anytool))))
+            ;; Robot is not currently holding a beam (by magic)
+            (not(exists
+                    (?anybeam)
+                    (BeamAtRobot ?anybeam)))
 
             ;; Clamp is at storage
             (ClampAtStorage ?clamp)
