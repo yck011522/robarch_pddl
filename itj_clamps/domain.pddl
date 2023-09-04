@@ -193,13 +193,10 @@
             ;; Robot is currently holding the ?clamp
             (ClampAtRobot ?clamp)
             ;; Clamp is suitable for the joint
-            ; (exists
-            ;     (?clamptype)
-            ;     (and(ClampOfType ?clamp ?clamptype)(JointNeedsClamp ?beam1 ?beam2) ?clamptype)))
-            ;; The beam where the joint belongs to is already BeamAtAssembled
-            ; (exists
-            ;     (?beam)
-            ;     (and (BeamHasJoint ?beam ?beam1 ?beam2)) (BeamAtAssembled ?beam)))
+            (exists (?clamptype)
+                (and(ClampOfType ?clamp ?clamptype)(JointNeedsClamp ?beam1 ?beam2 ?clamptype)))
+            ; The beam where the joint belongs to is already BeamAtAssembled
+            (BeamAtAssembled ?beam1)
         )
         :effect (and
             (not (ClampAtRobot ?clamp)) ;; Gripper no longer at robot
