@@ -1,0 +1,6 @@
+[submodule "ext/pddlstream"]
+	path = ext/pddlstream
+	url = git@github.com:yijiangh/pddlstream.git
+[submodule "ext/pyplanners"]
+	path = ext/pyplanners
+	url = git@github.com:yijiangh/pyplanners.git
