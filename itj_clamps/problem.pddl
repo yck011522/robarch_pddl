@@ -70,12 +70,6 @@
         (JointNeedsClamp beam1 beam3 clamptypeA)
         (JointNeedsClamp beam2 beam3 clamptypeB)
 
-        ; (BeamAssemblyRequiresJoint beam2 joint1_2)
-        ; (BeamAssemblyRequiresJoint beam3 joint1_3)
-        ; (BeamAssemblyRequiresJoint beam3 joint2_3)
-        ; (JointNeedsClamp joint1_2 clamptypeA)
-        ; (JointNeedsClamp joint1_3 clamptypeA)
-        ; (JointNeedsClamp joint2_3 clamptypeB)   
     )
 
     (:goal 
