@@ -14,7 +14,7 @@
                 // "itj_gripper_only",
                 "itj_clamps",
                 // "itj_gripper_ik",
-                "--nofluents",
+                // "--nofluents",
             ],
             "console": "integratedTerminal",
             "justMyCode": true

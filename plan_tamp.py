@@ -83,7 +83,7 @@ def main():
                         help='problem json\'s containing folder\'s name.')
     #
     # * PDDLStream configs
-    parser.add_argument('--nofluents', action='store_true', help='Not use fluent facts in stream definitions.')
+    # parser.add_argument('--nofluents', action='store_true', help='Not use fluent facts in stream definitions.')
     # parser.add_argument('--symbolics', action='store_true', help='Use the symbolic-only PDDL formulation.')
     # parser.add_argument('--disable_stream', action='store_true', help='Disable stream sampling in planning. Enable this will essentially ignore all the geometric constraints and all sampled predicate will be assumed always available. Defaults to False')
     parser.add_argument('--no_return_rack', action='store_true', help='Add all-tools-back-to-rack to the goal.')
@@ -109,6 +109,7 @@ def main():
 
     #########
     # * PDDLStream problem conversion and planning
+    args.nofluents = True
     LOGGER.info(colored('Using {} backend.'.format('pyplanner' if not args.nofluents else 'downward'), 'cyan'))
 
     # * Load process and recompute actions and states
