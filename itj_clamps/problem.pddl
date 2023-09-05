@@ -43,11 +43,13 @@
         (GripperOfType gripper2 grippertypeB)
 
         ;; Gripper requirements for picking up beam, at least one gripper type for each beam
-        ;; If more than one BeamNeedsGripperType is declared for a beam, it is assumed that either gripper type can be used
+        ;; If more than one BeamNeedsGripperType is declared for a beam, it means that either gripper type can be used
         (BeamNeedsGripperType beam1 grippertypeA)
         (BeamNeedsGripperType beam2 grippertypeB)
         (BeamNeedsGripperType beam3 grippertypeB)
-        (BeamNeedsGripperType beam4 grippertypeB)
+        
+        (BeamNeedsGripperType beam4 grippertypeA) ;; Either Type A or Type B can be used
+        (BeamNeedsGripperType beam4 grippertypeB) ;; Either Type A or Type B can be used
         
         ;; Initial position of each clamp, by deafult it is AtStorage
         (ClampAtStorage clamp1)
