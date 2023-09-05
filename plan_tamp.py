@@ -77,9 +77,9 @@ def main():
     # * Problem info
     parser.add_argument('--pddl_domain_name', default='itj_gripper_only', 
                         help='The name of the problem to solve')
-    parser.add_argument('--problem', default='CantiBoxLeft_10pcs_process.json',
+    parser.add_argument('--problem', default='pavilion_process.json', # CantiBoxLeft_10pcs_process.json
                         help='The name of the problem to solve (json file\'s name, e.g. "nine_pieces_process.json")')
-    parser.add_argument('--design_dir', default='210916_SymbolicPlanning', # 211010_CantiBox, 210128_RemodelFredPavilion
+    parser.add_argument('--design_dir', default='210128_RemodelFredPavilion', # 211010_CantiBox, 210916_SymbolicPlanning
                         help='problem json\'s containing folder\'s name.')
     #
     # * PDDLStream configs

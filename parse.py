@@ -1,4 +1,3 @@
-from operator import is_
 import os
 import re
 from termcolor import colored, cprint
@@ -7,11 +6,9 @@ from collections import defaultdict
 
 from pddlstream.utils import read, write
 from pddlstream.language.stream import DEBUG
-from pddlstream.algorithms.algorithm import parse_problem
-from pddlstream.language.write_pddl import get_problem_pddl
-from pddlstream.algorithms.downward import write_pddl
-from pddlstream.language.constants import And, PDDLProblem, Equal, TOTAL_COST
+from pddlstream.language.constants import And, Equal, PDDLProblem
 from pddlstream.language.generator import from_gen_fn, from_fn, from_test
+from pddlstream.language.temporal import parse_domain
 
 from integral_timber_joints.process import RobotClampAssemblyProcess
 from integral_timber_joints.planning.utils import beam_ids_from_argparse_seq_n
@@ -19,6 +16,7 @@ from integral_timber_joints.planning.utils import beam_ids_from_argparse_seq_n
 import load_pddlstream
 from load_pddlstream import HERE
 from utils import LOGGER
+from write_pddl import pddl_problem_with_original_names
 
 #################################################
 
@@ -43,10 +41,10 @@ def get_pddlstream_problem(
 
     process_symdata = process.to_symbolic_problem_data()
 
-    manipulate_cost = 5.0
+    # manipulate_cost = 5.0
     init = [
-        Equal(('Cost',), manipulate_cost),
-        Equal((TOTAL_COST,), 0)
+        # Equal(('Cost',), manipulate_cost),
+        # Equal((TOTAL_COST,), 0)
     ]
 
     # * Beams
@@ -137,61 +135,13 @@ def get_pddlstream_problem(
     pddlstream_problem = PDDLProblem(domain_pddl, constant_map, stream_pddl, stream_map, init, goal)
 
     # * export PDDL domain file
-    evaluations, goal_expression, domain, _ = parse_problem(pddlstream_problem)
-    # problem_pddl = get_problem_pddl(evaluations, goal_expression, domain.pddl, temporal=False)
-    problem_pddl = pddl_problem_with_original_names(domain, evaluations, goal_expression)
+    # parse domain pddl to make sure the domain and problem have consistent names
+    domain_pddl_str = parse_domain(domain_pddl).pddl
+    [parsed_domain_name] = re.findall(r'\(domain ([^ ]+)\)', domain_pddl_str)
+    problem_pddl_str = pddl_problem_with_original_names(parsed_domain_name, init, goal)
 
-    pddl_problem_path = os.path.join(HERE, pddl_domain_name, 'exported_domain.pddl')
-    write(pddl_problem_path, problem_pddl)
+    pddl_problem_path = os.path.join(HERE, pddl_domain_name, 'problem.pddl')
+    write(pddl_problem_path, problem_pddl_str)
     LOGGER.info(colored('Exported PDDL domain file to {}'.format(pddl_problem_path), 'green'))
 
     return pddlstream_problem
-
-from pddlstream.language.conversion import obj_from_pddl, is_atom, is_negated_atom
-from pddlstream.language.conversion import pddl_from_object, objects_from_evaluations
-from pddlstream.language.object import Object, OptimisticObject
-
-def pddl_from_object_og(obj):
-    if isinstance(obj, str):
-        return obj
-    return obj.value
-    
-def pddl_head_og(name, args):
-    return '({})'.format(' '.join([name] + list(map(pddl_from_object_og, args))))
-
-def pddl_from_evaluation_og(evaluation):
-    head = pddl_head_og(evaluation.head.function, evaluation.head.args)
-    if is_atom(evaluation):
-        return head
-    elif is_negated_atom(evaluation):
-        return '(not {})'.format(head)
-    value = evaluation.value
-    return '(= {} {})'.format(head, value)
-
-def pddl_from_expression_og(expression):
-    if isinstance(expression, Object) or isinstance(expression, OptimisticObject):
-        return pddl_from_object_og(expression)
-    if isinstance(expression, str):
-        return expression
-    return '({})'.format(' '.join(map(pddl_from_expression_og, expression)))
-
-def pddl_problem_with_original_names(domain, evaluations, goal_expression, objective=None):
-    [domain_name] = re.findall(r'\(domain ([^ ]+)\)', domain.pddl)
-    problem_name = domain_name
-    
-    objects = objects_from_evaluations(evaluations)
-    s = '(define (problem {})\n' \
-           '\t(:domain {})\n' \
-           '\t(:objects {})\n' \
-           '\t(:init \n\t\t{})\n' \
-           '\t(:goal {})'.format(
-        problem_name, 
-        domain_name,
-        ' '.join(list(map(pddl_from_object_og, objects))),
-        '\n\t\t'.join(sorted(filter(lambda p: p is not None,
-                                    map(pddl_from_evaluation_og, evaluations)))),
-        pddl_from_expression_og(goal_expression))
-    if objective is not None:
-        s += '\n\t(:metric minimize ({}))'.format(objective)
-    return s + ')\n'
-
