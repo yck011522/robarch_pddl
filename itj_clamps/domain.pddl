@@ -1,5 +1,6 @@
 (define (domain itj_clamp_only)
-    (:requirements :negative-preconditions :strips :equality :disjunctive-preconditions :derived-predicates)
+    (:requirements :negative-preconditions :strips :equality :disjunctive-preconditions)
+    ; :derived-predicates
     (:predicates
         ;; There are three beam position states: AtStorage, AtRobot, and AtAssembled. One and Only One is True at the same time.
         (Beam ?beam) ;; Static - List of all beams (beam_id)
@@ -66,8 +67,8 @@
                         ;; and that joint is demanding some clamp (declared by JointNeedsClamp) ...
                         (exists(?clamptype) (JointNeedsClamp ?earlierbeam ?beam ?clamptype))
                         ;; and not a single clamp had been attached to that joint
-                        ; (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
-                        (NotASingleClampAtJoint ?earlierbeam ?beam)
+                        (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
+                        ; (NotASingleClampAtJoint ?earlierbeam ?beam)
                     )
                 )
             )
@@ -79,14 +80,12 @@
     )
 
     
-    (:derived (NotASingleClampAtJoint ?earlierbeam ?beam)
+    ; (:derived (NotASingleClampAtJoint ?earlierbeam ?beam)
         
-        (not (exists(?clamp)
-            (ClampAtJoint ?clamp ?earlierbeam ?beam)
-        ))
-    )
-    
-
+    ;     (not (exists(?clamp)
+    ;         (ClampAtJoint ?clamp ?earlierbeam ?beam)
+    ;     ))
+    ; )
        
     ;; Gripper Manipulation
     ;; --------------------

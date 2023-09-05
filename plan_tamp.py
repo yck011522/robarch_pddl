@@ -11,14 +11,15 @@ from pddlstream.utils import INF
 from pddlstream.language.constants import print_plan, is_plan
 from pddlstream.utils import flatten, Profiler, SEPARATOR, inf_generator, INF
 from pddlstream.algorithms.meta import solve
+from pddlstream.utils import str_from_object
+from pddlstream.language.conversion import obj_from_pddl
+from pddlstream.language.constants import is_plan, DurativeAction, Action, StreamAction, FunctionAction
+
+from integral_timber_joints.planning.parsing import parse_process
 # from integral_timber_joints.planning.pddlstream_planning.solve import solve_serialized_incremental
 
 from utils import LOGGER
 from parse import get_pddlstream_problem
-
-from pddlstream.utils import str_from_object
-from pddlstream.language.conversion import obj_from_pddl
-from pddlstream.language.constants import is_plan, DurativeAction, Action, StreamAction, FunctionAction
 
 ##################################
 
@@ -74,8 +75,12 @@ def print_itj_pddl_plan(plan, show_details=False):
 def main():
     parser = argparse.ArgumentParser()
     # * Problem info
-    parser.add_argument('--problem', default='itj_gripper_only', 
+    parser.add_argument('--pddl_domain_name', default='itj_gripper_only', 
                         help='The name of the problem to solve')
+    parser.add_argument('--problem', default='CantiBoxLeft_10pcs_process.json',
+                        help='The name of the problem to solve (json file\'s name, e.g. "nine_pieces_process.json")')
+    parser.add_argument('--design_dir', default='210916_SymbolicPlanning', # 211010_CantiBox, 210128_RemodelFredPavilion
+                        help='problem json\'s containing folder\'s name.')
     #
     # * PDDLStream configs
     parser.add_argument('--nofluents', action='store_true', help='Not use fluent facts in stream definitions.')
@@ -105,7 +110,13 @@ def main():
     #########
     # * PDDLStream problem conversion and planning
     LOGGER.info(colored('Using {} backend.'.format('pyplanner' if not args.nofluents else 'downward'), 'cyan'))
-    pddlstream_problem = get_pddlstream_problem(args.problem,
+
+    # * Load process and recompute actions and states
+    process = parse_process(args.design_dir, args.problem) # , subdir=args.problem_subdir
+
+    pddlstream_problem = get_pddlstream_problem(
+        args.pddl_domain_name,
+        process,
         enable_stream= False, #not args.disable_stream, 
         reset_to_home=not args.no_return_rack, 
         use_fluents=not args.nofluents, 
@@ -141,8 +152,9 @@ def main():
                         #  effort_weight=effort_weight,
                          max_planner_time=INF,
                          debug=args.debug, verbose=1, 
-                         algorithm='incremental',
+                        #  algorithm='incremental',
                          **additional_config)
+
         # if reset_to_home
         # solution = solve_serialized_incremental(pddlstream_problem,
         #                  max_time=INF,

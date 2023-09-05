@@ -10,10 +10,26 @@
             "request": "launch",
             "program": "plan_tamp.py",
             "args": [
-                "--problem", 
+                "--pddl_domain_name", 
                 // "itj_gripper_only",
-                "itj_gripper_ik",
+                "itj_clamps",
+                // "itj_gripper_ik",
                 "--nofluents",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "pddlstream example",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/ext/pddlstream",
+            "module": "examples.pybullet.kuka.run",
+            "args": [
+                "-viewer", 
+                // "itj_gripper_only",
+                // "itj_gripper_ik",
+                // "--nofluents",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
