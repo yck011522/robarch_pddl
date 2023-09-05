@@ -75,11 +75,13 @@ def print_itj_pddl_plan(plan, show_details=False):
 def main():
     parser = argparse.ArgumentParser()
     # * Problem info
-    parser.add_argument('--pddl_domain_name', default='itj_gripper_only', 
-                        help='The name of the problem to solve')
-    parser.add_argument('--problem', default='pavilion_process.json', # CantiBoxLeft_10pcs_process.json
+    parser.add_argument('--pddl_folder', default='itj_gripper_only', 
+                        help='The folder of the pddl problem to solve')
+    parser.add_argument('--problem', default='pavilion_process.json', 
+                        # CantiBoxLeft_10pcs_process.json
                         help='The name of the problem to solve (json file\'s name, e.g. "nine_pieces_process.json")')
-    parser.add_argument('--design_dir', default='210128_RemodelFredPavilion', # 211010_CantiBox, 210916_SymbolicPlanning
+    parser.add_argument('--design_dir', default='210128_RemodelFredPavilion', 
+                        # 210916_SymbolicPlanning
                         help='problem json\'s containing folder\'s name.')
     #
     # * PDDLStream configs
@@ -114,9 +116,11 @@ def main():
 
     # * Load process and recompute actions and states
     process = parse_process(args.design_dir, args.problem) # , subdir=args.problem_subdir
+    process_name = os.path.splitext(os.path.basename(args.problem))[0]
 
     pddlstream_problem = get_pddlstream_problem(
-        args.pddl_domain_name,
+        args.pddl_folder,
+        process_name, 
         process,
         enable_stream= False, #not args.disable_stream, 
         reset_to_home=not args.no_return_rack, 

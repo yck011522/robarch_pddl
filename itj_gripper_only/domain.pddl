@@ -1,4 +1,4 @@
-(define (domain itj_clamp_only)
+(define (domain itj_gripper_only)
   (:requirements :negative-preconditions :strips :equality)
   (:predicates
     ; There are thee beam position states: AtStorage, AtRobot, and AtAssembled. One and Only One is True at the same time.

@@ -59,19 +59,19 @@
             (BeamAtRobot ?beam)
             ;; Joints on the beam have clamps attached to them 
             ;; Logic: There should not exist a scenario where an earlierbeam ... 
-            (not
-                (exists(?earlierbeam)
-                    (and 
-                        ;; Formed a joint with the current beam ... 
-                        (Joint ?earlierbeam ?beam)
-                        ;; and that joint is demanding some clamp (declared by JointNeedsClamp) ...
-                        (exists(?clamptype) (JointNeedsClamp ?earlierbeam ?beam ?clamptype))
-                        ;; and not a single clamp had been attached to that joint
-                        (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
-                        ; (NotASingleClampAtJoint ?earlierbeam ?beam)
-                    )
-                )
-            )
+            ; (not
+            ;     (exists(?earlierbeam)
+            ;         (and 
+            ;             ;; Formed a joint with the current beam ... 
+            ;             (Joint ?earlierbeam ?beam)
+            ;             ;; and that joint is demanding some clamp (declared by JointNeedsClamp) ...
+            ;             (exists(?clamptype) (JointNeedsClamp ?earlierbeam ?beam ?clamptype))
+            ;             ;; and not a single clamp had been attached to that joint
+            ;             (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
+            ;             ; (NotASingleClampAtJoint ?earlierbeam ?beam)
+            ;         )
+            ;     )
+            ; )
         )
         :effect (and
             (not (BeamAtRobot ?beam)) ;; Beam no longer at storage

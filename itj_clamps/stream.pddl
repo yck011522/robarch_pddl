@@ -1,3 +1,3 @@
-(define (stream itj_clamp)
+(define (stream itj_clamp_only)
 
 )

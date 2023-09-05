@@ -5,7 +5,7 @@ import argparse
 
 import load_pddlstream
 from pddlstream.algorithms.search import solve_from_pddl
-from pddlstream.language.constants import get_length, read_pddl_pair
+from pddlstream.language.constants import get_length, read_relative_dir
 
 def dump_plan(plan, cost):
     solved = plan is not None
@@ -19,12 +19,15 @@ def dump_plan(plan, cost):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--problem', default='itj_clamps', 
-                        help='The name of the problem to solve')
+    parser.add_argument('--pddl_folder', default='itj_clamps', 
+                        help='The folder of the pddl domain and problem')
+    parser.add_argument('--pddl_problem', default='problem.pddl', 
+                        help='problem pddl file name')
+    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
-    domain_pddl, problem_pddl = read_pddl_pair(__file__, relative_dir=args.problem)
-    plan, cost = solve_from_pddl(domain_pddl, problem_pddl)
+    domain_pddl, problem_pddl = read_relative_dir(__file__, filenames=['domain.pddl', args.pddl_problem], relative_dir=args.pddl_folder)
+    plan, cost = solve_from_pddl(domain_pddl, problem_pddl, debug=args.debug, clean=True)
     dump_plan(plan, cost)
 
 if __name__ == '__main__':

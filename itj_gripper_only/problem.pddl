@@ -1,5 +1,5 @@
 (define (problem simple_beam_assembly)
-    (:domain itj_clamp_only)
+    (:domain itj_gripper_only)
     (:objects 
         beam1
         beam2
