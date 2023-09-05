@@ -113,8 +113,8 @@ def main():
         # symbolic_only=args.symbolics
         )
 
-    if args.debug:
-        print_pddl_task_object_names(pddlstream_problem)
+    # if args.debug:
+    #     print_pddl_task_object_names(pddlstream_problem)
 
     additional_config = {}
     if not args.nofluents:
@@ -140,7 +140,9 @@ def main():
                         #  unit_efforts=True,
                         #  effort_weight=effort_weight,
                          max_planner_time=INF,
-                         debug=args.debug, verbose=1, **additional_config)
+                         debug=args.debug, verbose=1, 
+                         algorithm='incremental',
+                         **additional_config)
         # if reset_to_home
         # solution = solve_serialized_incremental(pddlstream_problem,
         #                  max_time=INF,

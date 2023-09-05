@@ -24,10 +24,10 @@ def get_pddlstream_problem(problem: str,
     options = options or {}
 
     domain_pddl = read(os.path.join(problem, 'domain.pddl'))
-    # if not use_fluents:
-    #     stream_pddl = read(os.path.join(HERE, problem, 'stream.pddl'))
-    # else:
-    #     stream_pddl = read(os.path.join(HERE, problem, 'stream_fluents.pddl'))
+    if not use_fluents:
+        stream_pddl = read(os.path.join(HERE, problem, 'stream.pddl'))
+    else:
+        stream_pddl = read(os.path.join(HERE, problem, 'stream_fluents.pddl'))
 
     manipulate_cost = 5.0
     init = [
