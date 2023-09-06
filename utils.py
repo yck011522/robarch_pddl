@@ -1,4 +1,11 @@
 import logging
+from termcolor import colored
+from functools import partial
+
+import load_pddlstream
+from pddlstream.utils import str_from_object
+from pddlstream.language.conversion import obj_from_pddl
+from pddlstream.language.constants import is_plan, DurativeAction, Action, StreamAction, FunctionAction
 
 ###########################################
 # borrowed from: https://github.com/compas-dev/compas_fab/blob/3efe608c07dc5b08653ee4132a780a3be9fb93af/src/compas_fab/backends/pybullet/utils.py#L83
@@ -26,3 +33,55 @@ def get_logger(name):
     return logger
 
 LOGGER = get_logger('robarch_pddl')
+
+###########################################
+
+def contains_number(value):
+    for character in value:
+        if character.isdigit():
+            return True
+    return False
+
+def colored_str_from_object(obj, show_details=False):
+    if not show_details:
+        # if isinstance(obj, Frame):
+        #     return '(frm)'
+        # elif isinstance(obj, Transformation):
+        #     return '(tf)'
+        # elif isinstance(obj, Configuration):
+        #     return colored('(conf)', 'yellow')
+        if isinstance(obj, Action):
+            return colored(obj, 'yellow')
+
+    str_rep = str_from_object(obj)
+    if contains_number(str_rep):
+        return colored(str_rep, 'blue')
+    else:
+        return colored(str_rep, 'red')
+
+def print_itj_pddl_plan(plan, show_details=False):
+    if not is_plan(plan):
+        return
+    step = 1
+    color_print_fn = partial(colored_str_from_object, show_details=show_details)
+    for action in plan:
+        if isinstance(action, DurativeAction):
+            name, args, start, duration = action
+            LOGGER.info('{:.2f} - {:.2f}) {} {}'.format(start, start+duration, name,
+                                                  ' '.join(map(str_from_object, args))))
+        elif isinstance(action, Action):
+            name, args = action
+            LOGGER.info('{:2}) {} {}'.format(step, colored(name, 'green'), ' '.join(map(color_print_fn, args))))
+            step += 1
+        elif isinstance(action, StreamAction):
+            name, inputs, outputs = action
+            LOGGER.info('    {}({})->({})'.format(name, ', '.join(map(str_from_object, inputs)),
+                                            ', '.join(map(str_from_object, outputs))))
+        elif isinstance(action, FunctionAction):
+            name, inputs = action
+            LOGGER.info('    {}({})'.format(name, ', '.join(map(str_from_object, inputs))))
+        else:
+            raise NotImplementedError(action)
+
+##################################
+
