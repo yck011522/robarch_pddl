@@ -11,14 +11,14 @@
             "program": "plan_tamp.py",
             "args": [
                 "--pddl_folder", 
-                // "itj_gripper_only",
-                "itj_clamps",
+                "itj_gripper_only",
+                // "itj_clamps",
                 // "itj_gripper_ik",
                 "--problem",
                 "CantiBoxLeft_10pcs_process.json",
                 "--design_dir",
                 "210916_SymbolicPlanning",
-                "--debug"
+                "--debug",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -31,6 +31,9 @@
             "args": [
                 "--pddl_folder", 
                 "itj_gripper_only",
+                "--pddl_problem",
+                "problem_CantiBoxLeft_10pcs_process.pddl",
+                "--debug",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
