@@ -30,10 +30,14 @@
             "program": "plan_pddl.py",
             "args": [
                 "--pddl_folder", 
-                "itj_gripper_only",
+                "itj_clamps",
                 "--pddl_problem",
+                // "problem.pddl",
                 "problem_CantiBoxLeft_10pcs_process.pddl",
                 "--debug",
+                "--symbolic_planner",
+                // "pyplanners",
+                "fd",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
