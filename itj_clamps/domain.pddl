@@ -48,8 +48,8 @@
             ;; Robot is not currently holding a beam
             (not
                 (exists
-                    (?beam)
-                    (BeamAtRobot ?beam)))
+                    (?otherbeam)
+                    (BeamAtRobot ?otherbeam)))
         )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
@@ -63,6 +63,7 @@
             ;; Beam is already on robot
             (BeamAtRobot ?beam)
             ;; Joints on the beam have clamps attached to them 
+            
             ;; Logic: There should not exist a scenario where an earlierbeam ... 
             (not
                 (exists(?earlierbeam)
