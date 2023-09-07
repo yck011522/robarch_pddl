@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "plan tamp",
             "type": "python",
             "request": "launch",
             "program": "plan_tamp.py",
             "args": [
-                "--pddl_folder", 
+                "--pddl_folder",
                 "itj_gripper_only",
                 // "itj_clamps",
                 // "itj_gripper_ik",
@@ -29,7 +37,7 @@
             "request": "launch",
             "program": "plan_pddl.py",
             "args": [
-                "--pddl_folder", 
+                "--pddl_folder",
                 "itj_clamps",
                 "--pddl_problem",
                 // "problem.pddl",
@@ -49,13 +57,13 @@
             "cwd": "${workspaceFolder}/ext/pddlstream",
             "module": "examples.pybullet.kuka.run",
             "args": [
-                "-viewer", 
+                "-viewer",
                 // "itj_gripper_only",
                 // "itj_gripper_ik",
                 // "--nofluents",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
-        }
+        },
     ]
 }
