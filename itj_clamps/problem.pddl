@@ -19,20 +19,20 @@
 
     (:init 
         ;; Static List of each Beam
-        (Beam beam1)
-        (Beam beam2)
-        (Beam beam3)
-        (Beam beam4)
+        ; (Beam beam1)
+        ; (Beam beam2)
+        ; (Beam beam3)
+        ; (Beam beam4)
 
-        ;; Initial position of each beam, by deafult it is AtStorage
+        ;; Initial position of each beam, by deafult it is AtStorag e
         (BeamAtStorage beam1)
         (BeamAtStorage beam2)
         (BeamAtStorage beam3)
         (BeamAtStorage beam4)
 
         ;; Static List of each Gripper
-        (Gripper gripper1)
-        (Gripper gripper2)
+        ; (Gripper gripper1)
+        ; (Gripper gripper2)
         
         ;; Initial position of each gripper, by deafult it is AtStorage
         (GripperAtStorage gripper1)
@@ -58,10 +58,10 @@
         (ClampAtStorage clamp4)
         
         ;; Static List of each Clamp
-        (Clamp clamp1)
-        (Clamp clamp2)
-        (Clamp clamp3)
-        (Clamp clamp4)
+        ; (Clamp clamp1)
+        ; (Clamp clamp2)
+        ; (Clamp clamp3)
+        ; (Clamp clamp4)
         
         ;; Declaring clamp types, one for each clamp
         (ClampOfType clamp1 clamptypeA)
