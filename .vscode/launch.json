@@ -38,7 +38,8 @@
             "program": "plan_pddl.py",
             "args": [
                 "--pddl_folder",
-                "itj_clamps",
+                // "itj_clamps",
+                "itj_gripper_only",
                 "--pddl_problem",
                 // "problem.pddl",
                 "problem_CantiBoxLeft_10pcs_process.pddl",
@@ -61,6 +62,26 @@
                 // "itj_gripper_only",
                 // "itj_gripper_ik",
                 // "--nofluents",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "export pddl problem",
+            "type": "python",
+            "request": "launch",
+            "program": "parse.py",
+            "args": [
+                "--pddl_folder",
+                "itj_gripper_only",
+                // "itj_clamps",
+                // "itj_gripper_ik",
+                "--process",
+                "CantiBoxLeft_10pcs_process.json",
+                "--design_dir",
+                "210916_SymbolicPlanning",
+                "--no_joint_tools",
+                "--no_scaffolding",
             ],
             "console": "integratedTerminal",
             "justMyCode": true

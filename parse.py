@@ -25,7 +25,7 @@ from write_pddl import pddl_problem_with_original_names
 
 #################################################
 
-def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1):
+def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1, export_joint_tools = True, export_scaffolding = True):
     """Convert a Process instance into a PDDLStream problem formulation
     """
 
@@ -40,21 +40,21 @@ def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1)
     for i, beam_id in enumerate(process.assembly.sequence):
         if steps > -1 & i >= steps:
             break
-        init.extend([
-            ('BeamAtStorage', beam_id),
-            ])
-        goal.extend([
-            ('BeamAtAssembled', beam_id),
-            ])
         #  Required Gripper Type
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
             # Scaffolding elements will have a joint with previous element
-            init.extend([
-                ('BeamScaffolding', process.assembly.sequence[i-1], beam_id),
-                ])
+            if export_scaffolding:
+                init.extend([
+                    ('BeamScaffolding', process.assembly.sequence[i-1], beam_id),
+                    ('BeamAtStorage', beam_id),
+                    ])
         else:
             init.extend([
                 ('BeamNeedsGripperType', beam_id, process.assembly.get_beam_attribute(beam_id, "gripper_type")),
+                ('BeamAtStorage', beam_id),
+                ])
+            goal.extend([
+                ('BeamAtAssembled', beam_id),
                 ])
 
     # * Grippers
@@ -78,48 +78,55 @@ def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1)
                 joint_clamp_type = process.assembly.get_joint_attribute((neighbor_id, beam_id), 'tool_type')
                 init.extend([
                     ('Joint', neighbor_id, beam_id),
-                    ('JointNeedsClamp', neighbor_id, beam_id, joint_clamp_type),
+                    ])
+                if export_joint_tools:
+                    init.extend([
+                        ('JointNeedsClamp', neighbor_id, beam_id, joint_clamp_type),
                     ])
         if process.assembly.get_assembly_method(beam_id) in [BeamAssemblyMethod.SCREWED_WITH_GRIPPER,BeamAssemblyMethod.SCREWED_WITHOUT_GRIPPER]:
             for neighbor_id in process.assembly.get_already_built_neighbors(beam_id):
                 init.extend([
                     ('Joint', neighbor_id, beam_id),
-                    ('JointNeedsScrewdriver', neighbor_id, beam_id),
+                    ])
+                if export_joint_tools:
+                    init.extend([
+                        ('JointNeedsScrewdriver', neighbor_id, beam_id),
                     ])
 
     # * Clamps
-    for clamp in process.clamps:
-        init.extend([
-            ('ClampAtStorage', clamp.name),
-            ('ClampOfType', clamp.name, clamp.type_name),
-        ])
-        goal.extend([
-            ('ClampAtStorage', clamp.name),
-        ])
+    if export_joint_tools:
+        for clamp in process.clamps:
+            init.extend([
+                ('ClampAtStorage', clamp.name),
+                ('ClampOfType', clamp.name, clamp.type_name),
+            ])
+            goal.extend([
+                ('ClampAtStorage', clamp.name),
+            ])
 
     unioned_goal = And(*goal)
     return init, unioned_goal
 
 def get_pddlstream_problem(
         pddl_folder: str,
-        process_name : str,
         process : RobotClampAssemblyProcess,
         enable_stream=True, 
-        reset_to_home=True, 
-        seq_n=None,
-        use_fluents=True, 
         options=None):
     """Convert a Process instance into a PDDLStream formulation
     """
     options = options or {}
 
     domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
-    if not use_fluents:
-        stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream.pddl'))
-    else:
-        stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream_fluents.pddl'))
+    stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream.pddl'))
 
     init, goal = get_pddlproblem_from_process(process)
+
+    if not enable_stream:
+        stream_map = DEBUG
+    else:
+        stream_map = {
+            # 'sample-place_clamp_to_structure':  from_fn(get_action_ik_fn(client, robot, process, 'place_clamp_to_structure', options=options)),
+        }
 
     constant_map = {}
     pddlstream_problem = PDDLProblem(domain_pddl, constant_map, stream_pddl, stream_map, init, goal)
@@ -151,8 +158,14 @@ if __name__ == '__main__':
                         # 210916_SymbolicPlanning
                         help='problem json\'s containing folder\'s name.')
     # Problem Info (Output)
-    parser.add_argument('--pddl_folder', default='itj_clamps_fromprocess',
+    parser.add_argument('--pddl_folder', default='itj_gripper_only', # itj_clamps_fromprocess
                         help='The folder of the pddl problem to solve')
+
+    # Problem simplication
+    parser.add_argument('--no_scaffolding', action='store_true',
+                        help='do not export scaffolding info to the pddl problem.')
+    parser.add_argument('--no_joint_tools', action='store_true',
+                        help='do not export clamp info to the pddl problem.')
     args = parser.parse_args()
 
     # Load domain.pddl
@@ -167,7 +180,7 @@ if __name__ == '__main__':
     problem_name = process_name
 
     # Extract init and goal
-    init, goal = get_pddlproblem_from_process(process)
+    init, goal = get_pddlproblem_from_process(process, export_joint_tools = not args.no_joint_tools, export_scaffolding = not args.no_scaffolding)
 
     # Export PDDL domain file
     export_pddl(domain_name, init, goal, args.pddl_folder, problem_name)

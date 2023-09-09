@@ -61,8 +61,7 @@ def evaluations_from_init(init):
         add_fact(evaluations, fact, result=INIT_EVALUATION, complexity=0)
     return evaluations
 
-def pddl_problem_with_original_names(domain_name, init, goal):
-    problem_name = domain_name
+def pddl_problem_with_original_names(problem_name, domain_name, init, goal):
     evaluations = evaluations_from_init(init)
     goal_expression = obj_from_value_expression(goal)
     
