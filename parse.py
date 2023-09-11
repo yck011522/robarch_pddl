@@ -25,7 +25,7 @@ from write_pddl import pddl_problem_with_original_names
 
 #################################################
 
-def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1):
+def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = 10):
     """Convert a Process instance into a PDDLStream problem formulation
     """
 
@@ -38,7 +38,7 @@ def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1)
 
     # * Beams
     for i, beam_id in enumerate(process.assembly.sequence):
-        if steps > -1 & i >= steps:
+        if (steps > -1) & (i >= steps):
             break
         init.extend([
             ('BeamAtStorage', beam_id),
@@ -69,7 +69,7 @@ def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1)
 
     # * Joint declaration and clamp/scewdriver tool type assignment
     for i, beam_id in enumerate(process.assembly.sequence):
-        if steps > -1 & i >= steps:
+        if (steps > -1) & (i >= steps):
             break
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
             continue
