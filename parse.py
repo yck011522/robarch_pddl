@@ -50,6 +50,7 @@ def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1,
                     ])
         else:
             init.extend([
+                ('Beam', beam_id),
                 ('BeamNeedsGripperType', beam_id, process.assembly.get_beam_attribute(beam_id, "gripper_type")),
                 ('BeamAtStorage', beam_id),
                 ])

@@ -62,7 +62,7 @@
             "program": "plan_tamp.py",
             "args": [
                 "--pddl_folder",
-                "itj_gripper_only",
+                "itj_gripper_collision",
                 // "itj_clamps",
                 // "itj_gripper_ik",
                 "--process",

@@ -2,7 +2,7 @@
   (:requirements :negative-preconditions :strips :equality)
   (:predicates
     ; There are thee beam position states: AtStorage, AtRobot, and AtAssembled. One and Only One is True at the same time.
-    ; (Beam ?beam) ;; Static - List of all Beam ID
+    (Beam ?beam) ;; Static - List of all Beam ID
     (BeamAtStorage ?beam)
     (BeamAtRobot ?beam)
     (BeamAtAssembled ?beam)
@@ -20,11 +20,15 @@
     ;; Joints are implied to have order, so (Joint ?beam1 ?beam2) is not the same as (Joint ?beam2 ?beam1)
     ;; ?beam1 have to be assembled before ?beam2 if (Joint ?beam1 ?beam2) is declared
     (Joint ?beam1 ?beam2) ;; Static - List of all joints (beam_id, beam_id)
+
+    ;; Predicates certified by the streams
+    (BeamAssemblyTraj ?beam ?traj)
+    (BeamAssemblyNotInCollision ?traj ?heldbeam ?otherbeam)
   )
   
 
     (:action pick_and_place_beam_with_gripper
-        :parameters (?beam ?gripper ?grippertype)
+        :parameters (?beam ?gripper ?grippertype ?traj)
         :precondition (and
             ;; Beam is at storage
             (BeamAtStorage ?beam)
@@ -47,13 +51,25 @@
                     ))
             )
 
+            (BeamAssemblyTraj ?beam ?traj)
+            (not
+              (exists (?otherbeam) (and 
+                  (BeamAtAssembled ?otherbeam)
+                  (not (BeamAssemblyNotInCollision ?traj ?beam ?otherbeam))
+                                     ))
             )
+            ; (forall (?otherbeam) (imply 
+            ;     (BeamAtAssembled ?otherbeam)
+            ;     (BeamAssemblyNotInCollision ?traj ?beam ?otherbeam)
+            ;                        ))
+
+              )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
             (BeamAtAssembled ?beam) ;; Beam now at assembled
         )
     )
-       
+ 
     ;; Gripper Manipulation
     ;; --------------------
   (:action pick_gripper_from_storage
@@ -72,16 +88,6 @@
       (GripperAtRobot ?gripper) ;; Gripper now at robot
     )
   )
-
-  ; (:derived (ExistsBeamAtRobot)
-  ;     (exists
-  ;         (?anybeam)
-  ;         ; (and
-  ;         ;   (Beam ?beam)
-  ;           (BeamAtRobot ?anybeam)
-  ;         ; )
-  ;     )
-  ; ) 
 
   (:action place_gripper_to_storage
     :parameters (?gripper)
