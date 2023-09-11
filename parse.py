@@ -111,15 +111,14 @@ def get_pddlstream_problem(
         pddl_folder: str,
         process : RobotClampAssemblyProcess,
         enable_stream=True, 
-        options=None):
+        **kwargs):
     """Convert a Process instance into a PDDLStream formulation
     """
-    options = options or {}
 
     domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
     stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream.pddl'))
 
-    init, goal = get_pddlproblem_from_process(process)
+    init, goal = get_pddlproblem_from_process(process, **kwargs)
 
     if not enable_stream:
         stream_map = DEBUG
