@@ -1,5 +1,5 @@
 (define (problem CantiBoxLeft_10pcs_process)
-	(:domain itj_gripper_only)
+	(:domain itj_gripper_collision)
 	(:objects PG1000 PG1500 PG500 b0 b1 b18 b19 b2 b3 b4 b7 b8 g1 g2 g3)
 	(:init 
 		(BeamAtStorage b0)

@@ -23,7 +23,7 @@ def main():
     # * Problem info
     parser.add_argument('--pddl_folder', default='itj_gripper_only', 
                         help='The folder of the pddl problem to solve')
-    parser.add_argument('--problem', default='pavilion_process.json', 
+    parser.add_argument('--process', default='pavilion_process.json', 
                         # CantiBoxLeft_10pcs_process.json
                         help='The name of the problem to solve (json file\'s name, e.g. "nine_pieces_process.json")')
     parser.add_argument('--design_dir', default='210128_RemodelFredPavilion', 
@@ -31,20 +31,20 @@ def main():
                         help='problem json\'s containing folder\'s name.')
     #
     # * PDDLStream configs
-    # parser.add_argument('--nofluents', action='store_true', help='Not use fluent facts in stream definitions.')
-    # parser.add_argument('--symbolics', action='store_true', help='Use the symbolic-only PDDL formulation.')
-    # parser.add_argument('--disable_stream', action='store_true', help='Disable stream sampling in planning. Enable this will essentially ignore all the geometric constraints and all sampled predicate will be assumed always available. Defaults to False')
-    parser.add_argument('--no_return_rack', action='store_true', help='Add all-tools-back-to-rack to the goal.')
     parser.add_argument('--costs', action='store_true', help='Use user-defined costs for actions.')
     # ! pyplanner config
-    parser.add_argument('--pp_h', default='ff', help='pyplanner heuristic configuration.')
-    parser.add_argument('--pp_search', default='eager', help='pyplanner search configuration.')
-    parser.add_argument('--pp_evaluator', default='greedy', help='pyplanner evaluator configuration.')
-    # ! downward config
-    parser.add_argument('--fd_search', default='ff-eager', help='downward search configuration.')
+    # parser.add_argument('--pp_h', default='ff', help='pyplanner heuristic configuration.')
+    # parser.add_argument('--pp_search', default='eager', help='pyplanner search configuration.')
+    # parser.add_argument('--pp_evaluator', default='greedy', help='pyplanner evaluator configuration.')
+    # # ! downward config
+    # parser.add_argument('--fd_search', default='ff-eager', help='downward search configuration.')
 
-    # * Planning for sub-assembly
-    # parser.add_argument('--seq_n', nargs='+', type=int, help='Zero-based index according to the Beam sequence in process.assembly.sequence. If only provide one number, `--seq_n 1`, we will only plan for one beam. If provide two numbers, `--seq_n start_id end_id`, we will plan from #start_id UNTIL #end_id. If more numbers are provided. By default, all the beams will be checked.')
+    # * Problem simplication
+    parser.add_argument('--disable_stream', action='store_true', help='Disable stream sampling in planning. Enable this will essentially ignore all the geometric constraints and all sampled predicate will be assumed always available. Defaults to False')
+    parser.add_argument('--no_scaffolding', action='store_true',
+                        help='do not export scaffolding info to the pddl problem.')
+    parser.add_argument('--no_joint_tools', action='store_true',
+                        help='do not export clamp info to the pddl problem.')
 
     # * Debugs, verbose and visuals
     parser.add_argument('--debug', action='store_true', help='Debug mode.')
@@ -56,43 +56,18 @@ def main():
     LOGGER.setLevel(logging_level)
 
     #########
-    # * PDDLStream problem conversion and planning
-    args.nofluents = True
-    LOGGER.info(colored('Using {} backend.'.format('pyplanner' if not args.nofluents else 'downward'), 'cyan'))
-
-    # * Load process and recompute actions and states
-    process = parse_process(args.design_dir, args.problem) # , subdir=args.problem_subdir
-    process_name = os.path.splitext(os.path.basename(args.problem))[0]
+    # * Load process and convert to PDDLStream problem
+    process = parse_process(args.design_dir, args.process) # , subdir=args.problem_subdir
 
     pddlstream_problem = get_pddlstream_problem(
         args.pddl_folder,
-        process_name, 
         process,
-        enable_stream= False, #not args.disable_stream, 
-        reset_to_home=not args.no_return_rack, 
-        use_fluents=not args.nofluents, 
-        # seq_n=args.seq_n, 
-        # symbolic_only=args.symbolics
+        enable_stream = not args.disable_stream,
+        export_joint_tools = not args.no_joint_tools, 
+        export_scaffolding = not args.no_scaffolding
         )
 
-    # if args.debug:
-    #     print_pddl_task_object_names(pddlstream_problem)
-
-    additional_config = {}
-    if not args.nofluents:
-        additional_config['planner'] = {
-            'search': args.pp_search, # eager | lazy | hill_climbing | a_star | random_walk | mcts
-            'evaluator': args.pp_evaluator, # 'bfs' | 'uniform' | 'astar' | 'wastar2' | 'wastar3' | 'greedy'
-            'heuristic': args.pp_h, # goal | add | ff | max | blind #'heuristic': ['ff', get_bias_fn(element_from_index)],
-            'successors': 'all', # all | random | first_goals | first_operators # 'successors': order_fn,
-        }
-    else:
-        # https://github.com/caelan/pddlstream/blob/4914667a13a80831cadaf115a70938e9f93b021e/pddlstream/algorithms/downward.py#L87
-        additional_config['planner'] = args.fd_search
-        # 'dijkstra' # 'max-astar' # 'lmcut-astar' # 'dijkstra' # 'ff-eager' # | 'add-random-lazy'
-
     set_cost_scale(1)
-    # effort_weight = 1. / get_cost_scale()
     # with Profiler(num=25):
     if True:
         solution = solve(pddlstream_problem,
@@ -103,16 +78,8 @@ def main():
                         #  effort_weight=effort_weight,
                          max_planner_time=INF,
                          debug=args.debug, verbose=1, 
-                         algorithm='incremental',
-                         **additional_config)
-
-        # if reset_to_home
-        # solution = solve_serialized_incremental(pddlstream_problem,
-        #                  max_time=INF,
-        #                  unit_costs=not args.costs,
-        #                  success_cost=INF,
-        #                  max_planner_time=INF,
-        #                  debug=args.debug, verbose=1, **additional_config)
+                        #  algorithm='incremental',
+                        )
 
     plan, cost, evaluations = solution
     plan_success = is_plan(plan)

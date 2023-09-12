@@ -11,13 +11,13 @@
 
     (:init 
         ; Initial state for beams
-        (Beam beam1)
-        (Beam beam2)
+        ; (Beam beam1)
+        ; (Beam beam2)
         (BeamAtStorage beam1)
         (BeamAtStorage beam2)
         ; Initial state for grippers
-        (Gripper gripper1)
-        (Gripper gripper2)
+        ; (Gripper gripper1)
+        ; (Gripper gripper2)
         (GripperAtStorage gripper1)
         (GripperAtStorage gripper2)
 
