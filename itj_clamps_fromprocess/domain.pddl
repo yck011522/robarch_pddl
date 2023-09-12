@@ -36,7 +36,9 @@
         (JointNeedsScrewdriver ?beam1 ?beam2) ;; Static
         (BeamScaffolding ?beam1 ?beam2) ;; Static
 
-
+        (AssemblyByClampingMethod ?beam)
+        (AssemblyByScrewingMethod ?beam)
+        (AssemblyByGroundConnection ?beam)
     )
     (:action pick_and_place_beam_with_gripper
         :parameters (?beam ?gripper ?grippertype)

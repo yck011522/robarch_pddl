@@ -33,7 +33,13 @@
         (ClampOfType ?clamp ?clamptype) ;; Static
         (JointNeedsClamp ?beam1 ?beam2 ?clamptype) ;; Static
 
-        (NotASingleClampAtJoint ?earlierbeam ?beam) ;; Derived
+
+        (JointNeedsScrewdriver ?beam1 ?beam2) ;; Static
+        (BeamScaffolding ?beam1 ?beam2) ;; Static
+
+        (AssemblyByClampingMethod ?beam)
+        (AssemblyByScrewingMethod ?beam)
+        (AssemblyByGroundConnection ?beam)
     )
     (:action pick_beam_with_gripper
         :parameters (?beam ?gripper ?grippertype)

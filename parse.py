@@ -25,41 +25,86 @@ from write_pddl import pddl_problem_with_original_names
 
 #################################################
 
-def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1, export_joint_tools = True, export_scaffolding = True):
-    """Convert a Process instance into a PDDLStream problem formulation
-    """
 
-    # manipulate_cost = 5.0
+def init_with_cost(manipulate_cost=5.0):
     init = [
-        # Equal(('Cost',), manipulate_cost),
-        # Equal((TOTAL_COST,), 0)
+        Equal(('Cost',), manipulate_cost),
+        Equal((TOTAL_COST,), 0)
     ]
-    goal = []
+    return init
 
-    # * Beams
+
+def extract_pddl_domain_name(pddl_folder):
+    domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
+    domain_name = parse_domain(domain_pddl).pddl
+    return domain_name
+
+
+def process_to_init_goal_beams(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        steps=-1,
+        declare_static=False,
+):
+
+    # * All Beams
     for i, beam_id in enumerate(process.assembly.sequence):
         if (steps > -1) & (i >= steps):
             break
-        #  Required Gripper Type
+        #  Skip scaffolding elements
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
-            # Scaffolding elements will have a joint with previous element
-            if export_scaffolding:
-                init.extend([
-                    ('BeamScaffolding', process.assembly.sequence[i-1], beam_id),
-                    ('BeamAtStorage', beam_id),
-                    ])
-        else:
+            continue
+        # Declare init and goal predicates
+        init.extend([
+            ('BeamAtStorage', beam_id),
+        ])
+        goal.extend([
+            ('BeamAtAssembled', beam_id),
+        ])
+        # Declare static predicate of beam
+        if declare_static:
             init.extend([
                 ('Beam', beam_id),
-                ('BeamNeedsGripperType', beam_id, process.assembly.get_beam_attribute(beam_id, "gripper_type")),
-                ('BeamAtStorage', beam_id),
-                ])
-            goal.extend([
-                ('BeamAtAssembled', beam_id),
-                ])
+            ])
 
-    # * Grippers
+    return init, goal
+
+
+def process_to_init_goal_joints(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        steps=-1,
+):
+
+    # * Joints
+    for i, beam_id in enumerate(process.assembly.sequence):
+        if (steps > -1) & (i >= steps):
+            break
+        # Skip scaffolding elements
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            continue
+        # Declare joints using already built neighbors (This will be compatiable with arbitary number of steps to export)
+        for neighbor_id in process.assembly.get_already_built_neighbors(beam_id):
+            init.extend([
+                ('Joint', neighbor_id, beam_id),
+            ])
+
+    return init, goal
+
+
+def process_to_init_goal_grippers(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        steps=-1,
+        declare_static=False,
+        replace_non_existent_gripper=True,
+):
+    """Convert a Process instance into a PDDLStream problem formulation
+    """
+    # * Gripper Tool
+    available_gripper_types = []
     for gripper in process.grippers:
+        # Declare init and goal predicates
         init.extend([
             ('GripperAtStorage', gripper.name),
             ('GripperOfType', gripper.name, gripper.type_name),
@@ -67,51 +112,133 @@ def get_pddlproblem_from_process(process: RobotClampAssemblyProcess, steps = -1,
         goal.extend([
             ('GripperAtStorage', gripper.name),
         ])
+        available_gripper_types.append(gripper.type_name)
+        # Declare static predicate of gripper
+        if declare_static:
+            init.extend([
+                ('Gripper', gripper.name),
+            ])
 
-    # * Joint declaration and clamp/scewdriver tool type assignment
+    # * Beam Demand Gripper
     for i, beam_id in enumerate(process.assembly.sequence):
         if (steps > -1) & (i >= steps):
             break
+        #  Skip scaffolding elements
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            continue
+        gripper_type = process.assembly.get_beam_attribute(beam_id, "gripper_type")
+        # Replace non existent gripper type with the first gripper type
+        if gripper_type not in available_gripper_types:
+            if replace_non_existent_gripper:
+                gripper_type = available_gripper_types[0]
+            else:
+                raise ValueError(
+                    f"Beam {beam_id} requires gripper type {gripper_type} but not available in the process.")
+        init.extend([
+            ('BeamNeedsGripperType', beam_id, gripper_type),
+        ])
+
+    return init, goal
+
+
+def process_to_init_goal_assemblymethod(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        steps=-1,
+):
+
+    # * All Beams
+    for i, beam_id in enumerate(process.assembly.sequence):
+        if (steps > -1) & (i >= steps):
+            break
+        #  Skip scaffolding elements
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
             continue
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.CLAMPED:
-            for neighbor_id in process.assembly.get_already_built_neighbors(beam_id):
-                joint_clamp_type = process.assembly.get_joint_attribute((neighbor_id, beam_id), 'tool_type')
-                init.extend([
-                    ('Joint', neighbor_id, beam_id),
-                    ])
-                if export_joint_tools:
-                    init.extend([
-                        ('JointNeedsClamp', neighbor_id, beam_id, joint_clamp_type),
-                    ])
-        if process.assembly.get_assembly_method(beam_id) in [BeamAssemblyMethod.SCREWED_WITH_GRIPPER,BeamAssemblyMethod.SCREWED_WITHOUT_GRIPPER]:
-            for neighbor_id in process.assembly.get_already_built_neighbors(beam_id):
-                init.extend([
-                    ('Joint', neighbor_id, beam_id),
-                    ])
-                if export_joint_tools:
-                    init.extend([
-                        ('JointNeedsScrewdriver', neighbor_id, beam_id),
-                    ])
+            init.extend([('AssemblyByClampingMethod', beam_id),])
+        if process.assembly.get_assembly_method(beam_id) in BeamAssemblyMethod.screw_methods:
+            init.extend([('AssemblyByScrewingMethod', beam_id),])
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.GROUND_CONTACT:
+            init.extend([('AssemblyByGroundConnection', beam_id),])
+    return init, goal
 
-    # * Clamps
-    if export_joint_tools:
-        for clamp in process.clamps:
+
+def process_to_init_goal_clamps(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        steps=-1,
+        declare_static=False,
+):
+
+    # * Clamp Tool
+    for clamp in process.clamps:
+        init.extend([
+            ('ClampAtStorage', clamp.name),
+            ('ClampOfType', clamp.name, clamp.type_name),
+        ])
+        goal.extend([
+            ('ClampAtStorage', clamp.name),
+        ])
+        # Declare static predicate of clamp
+        if declare_static:
             init.extend([
-                ('ClampAtStorage', clamp.name),
-                ('ClampOfType', clamp.name, clamp.type_name),
-            ])
-            goal.extend([
-                ('ClampAtStorage', clamp.name),
+                ('Gripper', clamp.name),
             ])
 
-    unioned_goal = And(*goal)
-    return init, unioned_goal
+    # * Beams Clamp type assignment
+    for i, beam_id in enumerate(process.assembly.sequence):
+        if (steps > -1) & (i >= steps):
+            break
+        #  Skip non clamped elements
+        if process.assembly.get_assembly_method(beam_id) != BeamAssemblyMethod.CLAMPED:
+            continue
+        #  Iterate through the joints
+        for neighbor_id in process.assembly.get_already_built_neighbors(beam_id):
+            joint_clamp_type = process.assembly.get_joint_attribute(
+                (neighbor_id, beam_id), 'tool_type')
+            init.extend([
+                ('JointNeedsClampType', neighbor_id, beam_id, joint_clamp_type),
+            ])
+    
+    return init, goal
+
+
+def process_to_init_goal_scaffolding(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        steps=-1,
+        declare_static=False,
+):
+
+    # * Scaffolding
+    last_beam_id = ""
+    for i, beam_id in enumerate(process.assembly.sequence):
+        if (steps > -1) & (i >= steps):
+            break
+        # BeamAssemblyMethod.MANUAL_ASSEMBLY are scaffolding
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            # Scaffolding elements will have a joint with previous element
+            init.extend([
+                ('ScaffoldingAtStorage', beam_id),
+                ('BeamNeedsScaffolding', last_beam_id, beam_id),
+            ])
+            if declare_static:
+                init.extend([
+                    ('Scaffolding', beam_id),
+                ])
+        else:
+            # Parse the beam id that the scaffolding belongs to:
+            last_beam_id = beam_id
+
+    return init, goal
+
+
+# Utility functions for parsing
 
 def get_pddlstream_problem(
         pddl_folder: str,
-        process : RobotClampAssemblyProcess,
-        enable_stream=True, 
+        process: RobotClampAssemblyProcess,
+        enable_stream=True,
         **kwargs):
     """Convert a Process instance into a PDDLStream formulation
     """
@@ -119,7 +246,10 @@ def get_pddlstream_problem(
     domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
     stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream.pddl'))
 
+    raise NotImplementedError(
+        "get_pddlproblem_from_process() function needs to be rewritten")
     init, goal = get_pddlproblem_from_process(process, **kwargs)
+
 
     if not enable_stream:
         stream_map = DEBUG
@@ -129,58 +259,150 @@ def get_pddlstream_problem(
         }
 
     constant_map = {}
-    pddlstream_problem = PDDLProblem(domain_pddl, constant_map, stream_pddl, stream_map, init, goal)
+    pddlstream_problem = PDDLProblem(
+        domain_pddl, constant_map, stream_pddl, stream_map, init, goal)
 
     return pddlstream_problem
+
 
 def export_pddl(domain_name, init, goal, pddl_folder, problem_name):
     """export PDDL domain file
     """
     # parse domain pddl to make sure the domain and problem have consistent names
-    
-    [parsed_domain_name] = re.findall(r'\(domain ([^ ]+)\)', domain_name)
-    problem_pddl_str = pddl_problem_with_original_names(problem_name, parsed_domain_name, init, goal)
 
-    pddl_problem_path = os.path.join(HERE, pddl_folder, 'problem_' + problem_name + '.pddl')
+    # [parsed_domain_name] = re.findall(r'\(domain ([^ ]+)\)', domain_name)
+    # problem_pddl_str = pddl_problem_with_original_names(problem_name, parsed_domain_name, init, goal)
+    problem_pddl_str = pddl_problem_with_original_names(
+        problem_name, domain_name, init, goal)
+
+    pddl_problem_path = os.path.join(
+        HERE, pddl_folder, 'problem_' + problem_name + '.pddl')
     write(pddl_problem_path, problem_pddl_str)
-    LOGGER.info(colored('Exported PDDL domain file to {}'.format(pddl_problem_path), 'green'))
+    LOGGER.info(colored('Exported PDDL domain file to {}'.format(
+        pddl_problem_path), 'green'))
+
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     # Problem info (Input)
-    parser.add_argument('--process', default='CantiBoxLeft_process.json', 
-    # parser.add_argument('--process', default='pavilion_process.json', 
-                        # CantiBoxLeft_10pcs_process.json
+    parser.add_argument('--process', default='CantiBoxLeft_process.json',
                         help='The name of the process to solve (json file\'s name, e.g. "nine_pieces_process.json")')
-    parser.add_argument('--design_dir', default='220407_CantiBoxLeft', 
-    # parser.add_argument('--design_dir', default='210128_RemodelFredPavilion', 
-                        # 210916_SymbolicPlanning
+    parser.add_argument('--design_dir', default='220407_CantiBoxLeft',
                         help='problem json\'s containing folder\'s name.')
-    # Problem Info (Output)
-    parser.add_argument('--pddl_folder', default='itj_gripper_only', # itj_clamps_fromprocess
-                        help='The folder of the pddl problem to solve')
 
-    # Problem simplication
-    parser.add_argument('--no_scaffolding', action='store_true',
-                        help='do not export scaffolding info to the pddl problem.')
-    parser.add_argument('--no_joint_tools', action='store_true',
-                        help='do not export clamp info to the pddl problem.')
+    # Problem Info (Output)
+    parser.add_argument('--planning_cases', metavar='N', type=int, nargs='+',
+                        help='Which planning case to parse')
+    parser.add_argument('--num_elements_to_export', metavar='N', type=int, default=-1,
+                        help='Number of steps to export. -1 means all steps.')
+
     args = parser.parse_args()
 
-    # Load domain.pddl
-    domain_pddl = read(os.path.join(args.pddl_folder, 'domain.pddl'))
-
     # Load process file
-    process = parse_process(args.design_dir, args.process) # , subdir=args.problem_subdir
-
-    # Naming
+    # , subdir=args.problem_subdir
+    process = parse_process(args.design_dir, args.process)
     process_name = os.path.splitext(os.path.basename(args.process))[0]
-    domain_name = parse_domain(domain_pddl).pddl
     problem_name = process_name
 
-    # Extract init and goal
-    init, goal = get_pddlproblem_from_process(process, export_joint_tools = not args.no_joint_tools, export_scaffolding = not args.no_scaffolding)
+    steps = args.num_elements_to_export
 
-    # Export PDDL domain file
-    export_pddl(domain_name, init, goal, args.pddl_folder, problem_name)
+    if 1 in args.planning_cases:
+        #  Load domain.pddl
+        pddl_folder = '01_beam_assembly'
+        domain_name = 'beam_assembly'
+
+        # Extract init and goal
+        init, goal = process_to_init_goal_beams(process, steps=steps)
+        unioned_goal = And(*goal)
+
+        # Export PDDL domain file
+        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
+
+    if 2 in args.planning_cases:
+        #  Load domain.pddl
+        pddl_folder = '02_joint_partial_order'
+        domain_name = 'joint_partial_order'
+
+        # Extract init and goal
+        init, goal = process_to_init_goal_beams(process, steps=steps)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, steps=steps)
+        unioned_goal = And(*goal)
+
+        # Export PDDL domain file
+        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
+
+    if 3 in args.planning_cases:
+        #  Load domain.pddl
+        pddl_folder = '03_gripper_switch'
+        domain_name = 'gripper_switch'
+
+        # Extract init and goal
+        init, goal = process_to_init_goal_beams(process, steps=steps)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, steps=steps)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, steps=steps)
+        unioned_goal = And(*goal)
+
+        # Export PDDL domain file
+        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
+
+    if 4 in args.planning_cases:
+        #  Load domain.pddl
+        pddl_folder = '04_assembly_stream'
+        domain_name = 'assembly_stream'
+
+        # Extract init and goal
+        init, goal = process_to_init_goal_beams(
+            process, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, steps=steps)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, steps=steps)
+        unioned_goal = And(*goal)
+
+        # Export PDDL domain file
+        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
+
+    if 5 in args.planning_cases:
+        #  Load domain.pddl
+        pddl_folder = '05_clamp_transfer'
+        domain_name = 'clamp_transfer'
+
+        # Extract init and goal
+        init, goal = process_to_init_goal_beams(
+            process, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, steps=steps)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_clamps(
+            process, init, goal, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_assemblymethod(process, init, goal, steps=steps)
+        unioned_goal = And(*goal)
+
+        # Export PDDL domain file
+        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
+
+    if 6 in args.planning_cases:
+        #  Load domain.pddl
+        pddl_folder = '06_clamp_stream'
+        domain_name = 'clamp_stream'
+
+        # Extract init and goal
+        init, goal = process_to_init_goal_beams(
+            process, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, steps=steps)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_clamps(
+            process, init, goal, steps=steps, declare_static=True)
+        init, goal = process_to_init_goal_assemblymethod(process, init, goal, steps=steps)
+        # init, goal = process_to_init_goal_scaffolding(process, init, goal, steps=steps, declare_static=True) # Probably not necessary
+        unioned_goal = And(*goal)
+
+        # Export PDDL domain file
+        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
