@@ -22,8 +22,8 @@
     (Joint ?beam1 ?beam2) ;; Static - List of all joints (beam_id, beam_id)
 
     ;; Predicates certified by the streams
-    (BeamAssemblyTraj ?beam ?traj)
-    (BeamAssemblyNotInCollision ?traj ?heldbeam ?otherbeam)
+    (AssembleBeamTraj ?beam ?traj)
+    (AssembleBeamNotInCollision ?traj ?heldbeam ?otherbeam)
   )
   
 
@@ -51,16 +51,16 @@
                     ))
             )
 
-            (BeamAssemblyTraj ?beam ?traj)
+            (AssembleBeamTraj ?beam ?traj)
             (not
               (exists (?otherbeam) (and 
                   (BeamAtAssembled ?otherbeam)
-                  (not (BeamAssemblyNotInCollision ?traj ?beam ?otherbeam))
+                  (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
                                      ))
             )
             ; (forall (?otherbeam) (imply 
             ;     (BeamAtAssembled ?otherbeam)
-            ;     (BeamAssemblyNotInCollision ?traj ?beam ?otherbeam)
+            ;     (AssembleBeamNotInCollision ?traj ?beam ?otherbeam)
             ;                        ))
 
               )

@@ -7,16 +7,16 @@
         (BeamNeedsGripperType ?beam ?grippertype)
         )
     :outputs (?traj)
-    :certified (BeamAssemblyTraj ?beam ?traj)
+    :certified (AssembleBeamTraj ?beam ?traj)
   )
 
   (:stream beam_assembly_collision_check
     :inputs (?traj ?heldbeam ?otherbeam)
     :domain (and 
-        (BeamAssemblyTraj ?heldbeam ?traj) 
+        (AssembleBeamTraj ?heldbeam ?traj) 
         (Beam ?otherbeam)
         )
-    :certified (BeamAssemblyNotInCollision ?traj ?heldbeam ?otherbeam)
+    :certified (AssembleBeamNotInCollision ?traj ?heldbeam ?otherbeam)
   )
 
 )
