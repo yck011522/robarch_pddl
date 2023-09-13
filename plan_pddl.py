@@ -30,7 +30,9 @@ def solve_pddl_symbolic(pddl_folder, pddl_problem_name, symbolic_planner_name, d
     
     # Calling FastDownward Planner
     if symbolic_planner_name == 'fd':
-        plan, cost = solve_from_pddl(domain_pddl, problem_pddl, debug=debug, clean=True)
+        use_greedy_planner = True
+        planner = 'ff-astar2' if use_greedy_planner else 'ff-astar'
+        plan, cost = solve_from_pddl(domain_pddl, problem_pddl, debug=debug, clean=True, max_planner_time=600, planner = planner)
     
     # Calling Pyplanners Planner
     elif symbolic_planner_name == 'pyplanners':
