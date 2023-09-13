@@ -43,13 +43,13 @@ def extract_pddl_domain_name(pddl_folder):
 def process_to_init_goal_beams(
         process: RobotClampAssemblyProcess,
         init=[], goal=[],
-        steps=-1,
+        num_elements_to_export=-1,
         declare_static=False,
 ):
 
     # * All Beams
     for i, beam_id in enumerate(process.assembly.sequence):
-        if (steps > -1) & (i >= steps):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
             break
         #  Skip scaffolding elements
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
@@ -73,17 +73,17 @@ def process_to_init_goal_beams(
 def process_to_init_goal_joints(
         process: RobotClampAssemblyProcess,
         init=[], goal=[],
-        steps=-1,
+        num_elements_to_export=-1,
 ):
 
     # * Joints
     for i, beam_id in enumerate(process.assembly.sequence):
-        if (steps > -1) & (i >= steps):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
             break
         # Skip scaffolding elements
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
             continue
-        # Declare joints using already built neighbors (This will be compatiable with arbitary number of steps to export)
+        # Declare joints using already built neighbors (This will be compatiable with arbitary number of num_elements_to_export to export)
         for neighbor_id in process.assembly.get_already_built_neighbors(beam_id):
             init.extend([
                 ('Joint', neighbor_id, beam_id),
@@ -95,7 +95,7 @@ def process_to_init_goal_joints(
 def process_to_init_goal_grippers(
         process: RobotClampAssemblyProcess,
         init=[], goal=[],
-        steps=-1,
+        num_elements_to_export=-1,
         declare_static=False,
         replace_non_existent_gripper=True,
 ):
@@ -121,12 +121,13 @@ def process_to_init_goal_grippers(
 
     # * Beam Demand Gripper
     for i, beam_id in enumerate(process.assembly.sequence):
-        if (steps > -1) & (i >= steps):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
             break
         #  Skip scaffolding elements
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
             continue
-        gripper_type = process.assembly.get_beam_attribute(beam_id, "gripper_type")
+        gripper_type = process.assembly.get_beam_attribute(
+            beam_id, "gripper_type")
         # Replace non existent gripper type with the first gripper type
         if gripper_type not in available_gripper_types:
             if replace_non_existent_gripper:
@@ -144,12 +145,12 @@ def process_to_init_goal_grippers(
 def process_to_init_goal_assemblymethod(
         process: RobotClampAssemblyProcess,
         init=[], goal=[],
-        steps=-1,
+        num_elements_to_export=-1,
 ):
 
     # * All Beams
     for i, beam_id in enumerate(process.assembly.sequence):
-        if (steps > -1) & (i >= steps):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
             break
         #  Skip scaffolding elements
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
@@ -166,7 +167,7 @@ def process_to_init_goal_assemblymethod(
 def process_to_init_goal_clamps(
         process: RobotClampAssemblyProcess,
         init=[], goal=[],
-        steps=-1,
+        num_elements_to_export=-1,
         declare_static=False,
 ):
 
@@ -187,7 +188,7 @@ def process_to_init_goal_clamps(
 
     # * Beams Clamp type assignment
     for i, beam_id in enumerate(process.assembly.sequence):
-        if (steps > -1) & (i >= steps):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
             break
         #  Skip non clamped elements
         if process.assembly.get_assembly_method(beam_id) != BeamAssemblyMethod.CLAMPED:
@@ -199,21 +200,21 @@ def process_to_init_goal_clamps(
             init.extend([
                 ('JointNeedsClampType', neighbor_id, beam_id, joint_clamp_type),
             ])
-    
+
     return init, goal
 
 
 def process_to_init_goal_scaffolding(
         process: RobotClampAssemblyProcess,
         init=[], goal=[],
-        steps=-1,
+        num_elements_to_export=-1,
         declare_static=False,
 ):
 
     # * Scaffolding
     last_beam_id = ""
     for i, beam_id in enumerate(process.assembly.sequence):
-        if (steps > -1) & (i >= steps):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
             break
         # BeamAssemblyMethod.MANUAL_ASSEMBLY are scaffolding
         if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
@@ -236,8 +237,10 @@ def process_to_init_goal_scaffolding(
 # Utility functions for parsing
 
 def get_pddlstream_problem(
-        pddl_folder: str,
         process: RobotClampAssemblyProcess,
+        case_number: int,
+        num_elements_to_export: int,
+        pddl_folder: str,
         enable_stream=True,
         **kwargs):
     """Convert a Process instance into a PDDLStream formulation
@@ -246,10 +249,8 @@ def get_pddlstream_problem(
     domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
     stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream.pddl'))
 
-    raise NotImplementedError(
-        "get_pddlproblem_from_process() function needs to be rewritten")
-    init, goal = get_pddlproblem_from_process(process, **kwargs)
-
+    init, goal = process_to_init_goal_by_case(
+        process, case_number, [], [], num_elements_to_export=num_elements_to_export)
 
     if not enable_stream:
         stream_map = DEBUG
@@ -282,6 +283,71 @@ def export_pddl(domain_name, init, goal, pddl_folder, problem_name):
         pddl_problem_path), 'green'))
 
 
+def process_to_init_goal_by_case(
+        process: RobotClampAssemblyProcess,
+        case_number: int,
+        init=[], goal=[],
+        num_elements_to_export=-1
+):
+    """Case Number represent the the six planning cases defined in the paper. 
+    Steps : the number of beams in process.assembly_sequence to export. Default -1 means all num_elements_to_export.
+    """
+    # Extract init and goal
+    if case_number == 1:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export)
+
+    if case_number == 2:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+
+    if case_number == 3:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, num_elements_to_export=num_elements_to_export)
+
+    if case_number == 4:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, num_elements_to_export=num_elements_to_export)
+
+    if case_number == 5:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_clamps(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_assemblymethod(
+            process, init, goal, num_elements_to_export=num_elements_to_export)
+
+    if case_number == 6:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_clamps(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_assemblymethod(
+            process, init, goal, num_elements_to_export=num_elements_to_export)
+        # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
+
+    unioned_goal = And(*goal)
+    return init, unioned_goal
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -295,114 +361,29 @@ if __name__ == '__main__':
     parser.add_argument('--planning_cases', metavar='N', type=int, nargs='+',
                         help='Which planning case to parse')
     parser.add_argument('--num_elements_to_export', metavar='N', type=int, default=-1,
-                        help='Number of steps to export. -1 means all steps.')
+                        help='Number of elements from process (may include skipped elements) to export. -1 means all elements are exported.')
 
     args = parser.parse_args()
 
     # Load process file
-    # , subdir=args.problem_subdir
     process = parse_process(args.design_dir, args.process)
     process_name = os.path.splitext(os.path.basename(args.process))[0]
     problem_name = process_name
 
-    steps = args.num_elements_to_export
+    num_elements_to_export = args.num_elements_to_export
 
-    if 1 in args.planning_cases:
-        #  Load domain.pddl
-        pddl_folder = '01_beam_assembly'
-        domain_name = 'beam_assembly'
+    # Hard coded domain names and folder names
+    pddl_folders = ['01_beam_assembly', '02_joint_partial_order', '03_gripper_switch',
+                    '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream']
+    domain_names = ['beam_assembly', 'joint_partial_order',
+                    'gripper_switch', 'assembly_stream', 'clamp_transfer', 'clamp_stream']
 
-        # Extract init and goal
-        init, goal = process_to_init_goal_beams(process, steps=steps)
-        unioned_goal = And(*goal)
-
-        # Export PDDL domain file
-        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
-
-    if 2 in args.planning_cases:
-        #  Load domain.pddl
-        pddl_folder = '02_joint_partial_order'
-        domain_name = 'joint_partial_order'
-
-        # Extract init and goal
-        init, goal = process_to_init_goal_beams(process, steps=steps)
-        init, goal = process_to_init_goal_joints(
-            process,  init, goal, steps=steps)
-        unioned_goal = And(*goal)
-
-        # Export PDDL domain file
-        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
-
-    if 3 in args.planning_cases:
-        #  Load domain.pddl
-        pddl_folder = '03_gripper_switch'
-        domain_name = 'gripper_switch'
-
-        # Extract init and goal
-        init, goal = process_to_init_goal_beams(process, steps=steps)
-        init, goal = process_to_init_goal_joints(
-            process,  init, goal, steps=steps)
-        init, goal = process_to_init_goal_grippers(
-            process, init, goal, steps=steps)
-        unioned_goal = And(*goal)
-
-        # Export PDDL domain file
-        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
-
-    if 4 in args.planning_cases:
-        #  Load domain.pddl
-        pddl_folder = '04_assembly_stream'
-        domain_name = 'assembly_stream'
-
-        # Extract init and goal
-        init, goal = process_to_init_goal_beams(
-            process, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_joints(
-            process,  init, goal, steps=steps)
-        init, goal = process_to_init_goal_grippers(
-            process, init, goal, steps=steps)
-        unioned_goal = And(*goal)
-
-        # Export PDDL domain file
-        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
-
-    if 5 in args.planning_cases:
-        #  Load domain.pddl
-        pddl_folder = '05_clamp_transfer'
-        domain_name = 'clamp_transfer'
-
-        # Extract init and goal
-        init, goal = process_to_init_goal_beams(
-            process, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_joints(
-            process,  init, goal, steps=steps)
-        init, goal = process_to_init_goal_grippers(
-            process, init, goal, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_clamps(
-            process, init, goal, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_assemblymethod(process, init, goal, steps=steps)
-        unioned_goal = And(*goal)
-
-        # Export PDDL domain file
-        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
-
-    if 6 in args.planning_cases:
-        #  Load domain.pddl
-        pddl_folder = '06_clamp_stream'
-        domain_name = 'clamp_stream'
-
-        # Extract init and goal
-        init, goal = process_to_init_goal_beams(
-            process, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_joints(
-            process,  init, goal, steps=steps)
-        init, goal = process_to_init_goal_grippers(
-            process, init, goal, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_clamps(
-            process, init, goal, steps=steps, declare_static=True)
-        init, goal = process_to_init_goal_assemblymethod(process, init, goal, steps=steps)
-        # init, goal = process_to_init_goal_scaffolding(process, init, goal, steps=steps, declare_static=True) # Probably not necessary
-        unioned_goal = And(*goal)
-
-        # Export PDDL domain file
-        export_pddl(domain_name, init, unioned_goal, pddl_folder, problem_name)
+    # Create PDDL problem from process and export
+    for case_number in range(1, 7):
+        if case_number in args.planning_cases:
+            # Extract init and goal
+            init, unioned_goal = process_to_init_goal_by_case(
+                process, case_number, [], [], num_elements_to_export=num_elements_to_export)
+            # Export PDDL domain file
+            export_pddl(domain_names[case_number - 1], init,
+                        unioned_goal, pddl_folders[case_number - 1], problem_name)
