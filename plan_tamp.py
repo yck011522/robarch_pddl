@@ -14,22 +14,25 @@ from integral_timber_joints.planning.parsing import parse_process
 # from integral_timber_joints.planning.pddlstream_planning.solve import solve_serialized_incremental
 
 from utils import LOGGER, print_itj_pddl_plan
-from parse import get_pddlstream_problem
+from parse import get_pddlstream_problem, PDDL_FOLDERS, DOMAIN_NAMES
 
 ##################################
 
 def main():
     parser = argparse.ArgumentParser()
     # * Problem info
-    parser.add_argument('--pddl_folder', default='itj_gripper_only', 
-                        help='The folder of the pddl problem to solve')
-    parser.add_argument('--process', default='pavilion_process.json', 
-                        # CantiBoxLeft_10pcs_process.json
+    parser.add_argument('--process', default='CantiBoxLeft_process.json', 
                         help='The name of the problem to solve (json file\'s name, e.g. "nine_pieces_process.json")')
-    parser.add_argument('--design_dir', default='210128_RemodelFredPavilion', 
-                        # 210916_SymbolicPlanning
+    parser.add_argument('--design_dir', default='220407_CantiBoxLeft', 
                         help='problem json\'s containing folder\'s name.')
-    #
+
+    # * Planning Problem Scope
+    parser.add_argument('--disable_stream', action='store_true', help='Disable stream sampling in planning. Enable this will essentially ignore all the geometric constraints and all sampled predicate will be assumed always available. Defaults to False')
+    parser.add_argument('--planning_case', metavar='N', type=int, default=1,
+                        help='Which planning case to parse')
+    parser.add_argument('--num_elements_to_export', metavar='N', type=int, default=-1,
+                        help='Number of elements from process (may include skipped elements) to export. -1 means all elements are exported.')
+    
     # * PDDLStream configs
     parser.add_argument('--costs', action='store_true', help='Use user-defined costs for actions.')
     # ! pyplanner config
@@ -38,13 +41,6 @@ def main():
     # parser.add_argument('--pp_evaluator', default='greedy', help='pyplanner evaluator configuration.')
     # # ! downward config
     # parser.add_argument('--fd_search', default='ff-eager', help='downward search configuration.')
-
-    # * Problem simplication
-    parser.add_argument('--disable_stream', action='store_true', help='Disable stream sampling in planning. Enable this will essentially ignore all the geometric constraints and all sampled predicate will be assumed always available. Defaults to False')
-    parser.add_argument('--no_scaffolding', action='store_true',
-                        help='do not export scaffolding info to the pddl problem.')
-    parser.add_argument('--no_joint_tools', action='store_true',
-                        help='do not export clamp info to the pddl problem.')
 
     # * Debugs, verbose and visuals
     parser.add_argument('--debug', action='store_true', help='Debug mode.')
@@ -60,11 +56,11 @@ def main():
     process = parse_process(args.design_dir, args.process) # , subdir=args.problem_subdir
 
     pddlstream_problem = get_pddlstream_problem(
-        args.pddl_folder,
-        process,
+        process = process,
+        case_number = args.case_number,
+        num_elements_to_export = args.num_elements_to_export,
+        pddl_folder = PDDL_FOLDERS[args.case_number - 1],
         enable_stream = not args.disable_stream,
-        export_joint_tools = not args.no_joint_tools, 
-        export_scaffolding = not args.no_scaffolding
         )
 
     set_cost_scale(1)

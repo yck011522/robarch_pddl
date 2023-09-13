@@ -1,4 +1,6 @@
 import logging
+import os
+from load_pddlstream import HERE
 from termcolor import colored
 from functools import partial
 
@@ -59,6 +61,7 @@ def colored_str_from_object(obj, show_details=False):
     else:
         return colored(str_rep, 'red')
 
+
 def print_itj_pddl_plan(plan, show_details=False):
     if not is_plan(plan):
         return
@@ -83,5 +86,43 @@ def print_itj_pddl_plan(plan, show_details=False):
         else:
             raise NotImplementedError(action)
 
+def pddl_plan_to_string(plan):
+    plan_string_lines = []
+    step = 1
+    for action in plan:
+        if isinstance(action, DurativeAction):
+            name, args, start, duration = action
+            plan_string_lines.append('{:.2f} - {:.2f}) {} {}'.format(start, start+duration, name,
+                                                  ' '.join(map(str_from_object, args))))
+        elif isinstance(action, Action):
+            name, args = action
+            plan_string_lines.append('{:3}: {} {}'.format(step, name, ' '.join(args)))
+            step += 1
+        elif isinstance(action, StreamAction):
+            name, inputs, outputs = action
+            plan_string_lines.append('    {}({})->({})'.format(name, ', '.join(map(str_from_object, inputs)),
+                                            ', '.join(map(str_from_object, outputs))))
+        elif isinstance(action, FunctionAction):
+            name, inputs = action
+            plan_string_lines.append('    {}({})'.format(name, ', '.join(map(str_from_object, inputs))))
+        else:
+            raise NotImplementedError(action)
+    return plan_string_lines
+
+def save_itj_pddl_plan(plan, pddl_folder, file_name):
+    if not is_plan(plan):
+        return
+    
+    # Create folder if not exists
+    if not os.path.exists(pddl_folder):
+        os.makedirs(pddl_folder)
+
+    # Save plan to file
+    file_output_path = os.path.join(HERE, pddl_folder, file_name)
+    with open(file_output_path, 'w') as f:
+        for line in pddl_plan_to_string(plan):
+            f.write(line + '\n')
+            
+        
 ##################################
 

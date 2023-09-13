@@ -26,6 +26,12 @@ from write_pddl import pddl_problem_with_original_names
 #################################################
 
 
+PDDL_FOLDERS = ['01_beam_assembly', '02_joint_partial_order', '03_gripper_switch',
+                '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream']
+DOMAIN_NAMES = ['beam_assembly', 'joint_partial_order',
+                'gripper_switch', 'assembly_stream', 'clamp_transfer', 'clamp_stream']
+
+
 def init_with_cost(manipulate_cost=5.0):
     init = [
         Equal(('Cost',), manipulate_cost),
@@ -252,12 +258,12 @@ def get_pddlstream_problem(
     init, goal = process_to_init_goal_by_case(
         process, case_number, [], [], num_elements_to_export=num_elements_to_export)
 
-    if not enable_stream:
-        stream_map = DEBUG
-    else:
+    if enable_stream:
         stream_map = {
             # 'sample-place_clamp_to_structure':  from_fn(get_action_ik_fn(client, robot, process, 'place_clamp_to_structure', options=options)),
         }
+    else:
+        stream_map = DEBUG
 
     constant_map = {}
     pddlstream_problem = PDDLProblem(
@@ -349,15 +355,14 @@ def process_to_init_goal_by_case(
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     # Problem info (Input)
-    parser.add_argument('--process', default='CantiBoxLeft_process.json',
+    parser.add_argument('--process_file_name', default='CantiBoxLeft_process.json',
                         help='The name of the process to solve (json file\'s name, e.g. "nine_pieces_process.json")')
     parser.add_argument('--design_dir', default='220407_CantiBoxLeft',
                         help='problem json\'s containing folder\'s name.')
 
-    # Problem Info (Output)
+    # Planning Problem Scope
     parser.add_argument('--planning_cases', metavar='N', type=int, nargs='+',
                         help='Which planning case to parse')
     parser.add_argument('--num_elements_to_export', metavar='N', type=int, default=-1,
@@ -366,17 +371,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load process file
-    process = parse_process(args.design_dir, args.process)
-    process_name = os.path.splitext(os.path.basename(args.process))[0]
+    process_file_name = args.process_file_name
+    process = parse_process(args.design_dir, process_file_name)
+    process_name = os.path.splitext(os.path.basename(process_file_name))[0]
     problem_name = process_name
 
     num_elements_to_export = args.num_elements_to_export
 
     # Hard coded domain names and folder names
-    pddl_folders = ['01_beam_assembly', '02_joint_partial_order', '03_gripper_switch',
-                    '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream']
-    domain_names = ['beam_assembly', 'joint_partial_order',
-                    'gripper_switch', 'assembly_stream', 'clamp_transfer', 'clamp_stream']
+    pddl_folders = PDDL_FOLDERS
+    domain_names = DOMAIN_NAMES
 
     # Create PDDL problem from process and export
     for case_number in range(1, 7):
