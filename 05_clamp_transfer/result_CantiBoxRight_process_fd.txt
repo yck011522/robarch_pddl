@@ -1,0 +1,98 @@
+  1: pick_gripper_from_storage g3
+  2: assemble_beam_by_ground_connection b0 g3 pg1500
+  3: assemble_beam_by_ground_connection b1 g3 pg1500
+  4: place_gripper_to_storage g3
+  5: pick_clamp_from_storage c2
+  6: place_clamp_to_joint c2 b1 b8 cl3
+  7: pick_clamp_from_storage c3
+  8: place_clamp_to_joint c3 b0 b6 cl3m
+  9: pick_clamp_from_storage c4
+ 10: place_clamp_to_joint c4 b0 b2 cl3m
+ 11: pick_gripper_from_storage g3
+ 12: assemble_beam_by_clamping_method b6 g3 pg1500
+ 13: assemble_beam_by_clamping_method b8 g3 pg1500
+ 14: assemble_beam_by_clamping_method b2 g3 pg1500
+ 15: place_gripper_to_storage g3
+ 16: pick_clamp_from_joint c2 b1 b8
+ 17: place_clamp_to_joint c2 b2 b16 cl3
+ 18: pick_clamp_from_storage c1
+ 19: place_clamp_to_joint c1 b6 b7 cl3
+ 20: pick_clamp_from_joint c3 b0 b6
+ 21: place_clamp_to_joint c3 b2 b7 cl3m
+ 22: pick_clamp_from_joint c4 b0 b2
+ 23: place_clamp_to_joint c4 b6 b16 cl3m
+ 24: pick_gripper_from_storage g3
+ 25: assemble_beam_by_clamping_method b16 g3 pg1500
+ 26: assemble_beam_by_clamping_method b7 g3 pg1500
+ 27: assemble_beam_by_screwing_method b17 g3 pg1500
+ 28: place_gripper_to_storage g3
+ 29: pick_clamp_from_joint c2 b2 b16
+ 30: place_clamp_to_joint c2 b1 b3 cl3
+ 31: pick_clamp_from_joint c3 b2 b7
+ 32: place_clamp_to_joint c3 b6 b13 cl3m
+ 33: pick_clamp_from_joint c1 b6 b7
+ 34: place_clamp_to_joint c1 b8 b13 cl3
+ 35: pick_gripper_from_storage g3
+ 36: assemble_beam_by_clamping_method b3 g3 pg1500
+ 37: assemble_beam_by_clamping_method b13 g3 pg1500
+ 38: place_gripper_to_storage g3
+ 39: pick_clamp_from_joint c4 b6 b16
+ 40: place_clamp_to_joint c4 b2 b10 cl3m
+ 41: pick_clamp_from_joint c2 b1 b3
+ 42: place_clamp_to_joint c2 b3 b10 cl3
+ 43: pick_clamp_from_joint c1 b8 b13
+ 44: place_clamp_to_joint c1 b3 b4 cl3
+ 45: pick_clamp_from_joint c3 b6 b13
+ 46: place_clamp_to_joint c3 b2 b4 cl3m
+ 47: pick_gripper_from_storage g3
+ 48: assemble_beam_by_clamping_method b10 g3 pg1500
+ 49: assemble_beam_by_clamping_method b4 g3 pg1500
+ 50: place_gripper_to_storage g3
+ 51: pick_clamp_from_joint c2 b3 b10
+ 52: place_clamp_to_joint c2 b3 b5 cl3
+ 53: pick_clamp_from_joint c3 b2 b4
+ 54: place_clamp_to_joint c3 b2 b5 cl3m
+ 55: pick_clamp_from_joint c1 b3 b4
+ 56: place_clamp_to_joint c1 b3 b9 cl3
+ 57: pick_clamp_from_joint c4 b2 b10
+ 58: place_clamp_to_joint c4 b8 b9 cl3m
+ 59: pick_gripper_from_storage g3
+ 60: assemble_beam_by_clamping_method b5 g3 pg1500
+ 61: assemble_beam_by_clamping_method b9 g3 pg1500
+ 62: place_gripper_to_storage g3
+ 63: pick_clamp_from_joint c3 b2 b5
+ 64: place_clamp_to_storage c3
+ 65: pick_clamp_from_joint c4 b8 b9
+ 66: place_clamp_to_storage c4
+ 67: pick_clamp_from_joint c2 b3 b5
+ 68: place_clamp_to_joint c2 b3 b18 cl3
+ 69: pick_clamp_from_joint c1 b3 b9
+ 70: place_clamp_to_joint c1 b8 b18 cl3
+ 71: pick_gripper_from_storage g3
+ 72: assemble_beam_by_clamping_method b18 g3 pg1500
+ 73: assemble_beam_by_screwing_method b19 g3 pg1500
+ 74: place_gripper_to_storage g3
+ 75: pick_clamp_from_joint c1 b8 b18
+ 76: place_clamp_to_storage c1
+ 77: pick_clamp_from_joint c2 b3 b18
+ 78: place_clamp_to_joint c2 b8 b12 cl3
+ 79: pick_clamp_from_storage c3
+ 80: place_clamp_to_joint c3 b6 b12 cl3m
+ 81: pick_gripper_from_storage g2
+ 82: assemble_beam_by_clamping_method b12 g2 pg1000
+ 83: assemble_beam_by_screwing_method b11 g2 pg1000
+ 84: place_gripper_to_storage g2
+ 85: pick_clamp_from_joint c2 b8 b12
+ 86: place_clamp_to_storage c2
+ 87: pick_clamp_from_joint c3 b6 b12
+ 88: place_clamp_to_joint c3 b6 b14 cl3m
+ 89: pick_clamp_from_storage c4
+ 90: place_clamp_to_joint c4 b8 b14 cl3m
+ 91: pick_gripper_from_storage g2
+ 92: assemble_beam_by_clamping_method b14 g2 pg1000
+ 93: assemble_beam_by_screwing_method b15 g2 pg1000
+ 94: place_gripper_to_storage g2
+ 95: pick_clamp_from_joint c3 b6 b14
+ 96: place_clamp_to_storage c3
+ 97: pick_clamp_from_joint c4 b8 b14
+ 98: place_clamp_to_storage c4
