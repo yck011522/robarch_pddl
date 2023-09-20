@@ -13,7 +13,7 @@ from pddlstream.language.attachments import solve_pyplanners
 from pddlstream.utils import Verbose
 
 from utils import LOGGER, print_itj_pddl_plan, save_itj_pddl_plan
-from parse import PDDL_FOLDERS, DOMAIN_NAMES, HERE
+from parse_symbolic import PDDL_FOLDERS, DOMAIN_NAMES, HERE
 
 def dump_plan(plan, cost):
     solved = plan is not None

@@ -14,7 +14,8 @@ from integral_timber_joints.planning.parsing import parse_process
 # from integral_timber_joints.planning.pddlstream_planning.solve import solve_serialized_incremental
 
 from utils import LOGGER, print_itj_pddl_plan
-from parse import get_pddlstream_problem, PDDL_FOLDERS, DOMAIN_NAMES
+from parse_symbolic import PDDL_FOLDERS
+from parse_tamp import get_pddlstream_problem
 
 ##################################
 

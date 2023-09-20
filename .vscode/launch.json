@@ -16,7 +16,7 @@
             "name": "Parse CantiBoxLeft All Cases",
             "type": "python",
             "request": "launch",
-            "program": "parse.py",
+            "program": "parse_symbolic.py",
             "args": [
                 "--planning_cases",
                 "1","2","3","4","5","6",
@@ -34,7 +34,7 @@
             "name": "Parse CantiBoxMid All Cases",
             "type": "python",
             "request": "launch",
-            "program": "parse.py",
+            "program": "parse_symbolic.py",
             "args": [
                 "--planning_cases",
                 "1","2","3","4","5","6",
@@ -52,7 +52,7 @@
             "name": "Parse CantiBoxRight All Cases",
             "type": "python",
             "request": "launch",
-            "program": "parse.py",
+            "program": "parse_symbolic.py",
             "args": [
                 "--planning_cases",
                 "1","2","3","4","5","6",
