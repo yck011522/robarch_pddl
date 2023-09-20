@@ -28,7 +28,7 @@ def main():
 
     # * Planning Problem Scope
     parser.add_argument('--disable_stream', action='store_true', help='Disable stream sampling in planning. Enable this will essentially ignore all the geometric constraints and all sampled predicate will be assumed always available. Defaults to False')
-    parser.add_argument('--planning_case', metavar='N', type=int, default=1,
+    parser.add_argument('--planning_cases', metavar='N', type=int, nargs='+', default=[4,6],
                         help='Which planning case to parse')
     parser.add_argument('--num_elements_to_export', metavar='N', type=int, default=-1,
                         help='Number of elements from process (may include skipped elements) to export. -1 means all elements are exported.')
@@ -55,36 +55,38 @@ def main():
     # * Load process and convert to PDDLStream problem
     process = parse_process(args.design_dir, args.process) # , subdir=args.problem_subdir
 
-    pddlstream_problem = get_pddlstream_problem(
-        process = process,
-        case_number = args.case_number,
-        num_elements_to_export = args.num_elements_to_export,
-        pddl_folder = PDDL_FOLDERS[args.case_number - 1],
-        enable_stream = not args.disable_stream,
-        )
+    for case_number in args.planning_cases:
+        pddl_folder = PDDL_FOLDERS[case_number - 1]
+        pddlstream_problem = get_pddlstream_problem(
+            process = process,
+            case_number = case_number,
+            num_elements_to_export = args.num_elements_to_export,
+            pddl_folder = pddl_folder,
+            enable_stream = not args.disable_stream,
+            )
 
-    set_cost_scale(1)
-    # with Profiler(num=25):
-    if True:
-        solution = solve(pddlstream_problem,
-                         max_time=INF,
-                         unit_costs=not args.costs,
-                         success_cost=INF,
-                        #  unit_efforts=True,
-                        #  effort_weight=effort_weight,
-                         max_planner_time=INF,
-                         debug=args.debug, verbose=1, 
-                        #  algorithm='incremental',
-                        )
+        set_cost_scale(1)
+        # with Profiler(num=25):
+        if True:
+            solution = solve(pddlstream_problem,
+                             max_time=INF,
+                             unit_costs=not args.costs,
+                             success_cost=INF,
+                            #  unit_efforts=True,
+                            #  effort_weight=effort_weight,
+                             max_planner_time=INF,
+                             debug=args.debug, verbose=1, 
+                            #  algorithm='incremental',
+                            )
 
-    plan, cost, evaluations = solution
-    plan_success = is_plan(plan)
+        plan, cost, evaluations = solution
+        plan_success = is_plan(plan)
 
-    #########
-    # * PDDLStream problem conversion and planning
-    LOGGER.debug('-'*10)
-    print_itj_pddl_plan(plan)
-    LOGGER.info(colored('Planning {}'.format('succeeds' if plan_success else 'fails'), 'green' if plan_success else 'red'))
+        #########
+        # * PDDLStream problem conversion and planning
+        LOGGER.debug('-'*10)
+        print_itj_pddl_plan(plan)
+        LOGGER.info(colored('Planning {}'.format('succeeds' if plan_success else 'fails'), 'green' if plan_success else 'red'))
 
     # if plan_success:
     #     LOGGER.info(f'Plan length: {len(plan)}')
