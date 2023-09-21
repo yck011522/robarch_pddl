@@ -106,7 +106,7 @@
             "justMyCode": true
         },
         {
-            "name": "plan tamp",
+            "name": "Plan TAMP FD 1Problem Case 4",
             "type": "python",
             "request": "launch",
             "program": "plan_tamp.py",
@@ -120,10 +120,11 @@
                 // "210916_SymbolicPlanning",
                 "220407_CantiBoxLeft",
                 "--debug",
-                "--disable_stream",
+                "--viewer",
+                // "--disable_stream",
             ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
     ]
 }

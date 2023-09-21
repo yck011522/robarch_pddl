@@ -1,4 +1,4 @@
-(define (stream itj_gripper_collision)
+(define (stream assembly_stream)
 
   (:stream plan_motion_for_beam_assembly
     :inputs (?beam ?grippertype)

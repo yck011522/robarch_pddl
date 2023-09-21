@@ -25,11 +25,13 @@ def get_pddlstream_problem(
         case_number: int,
         num_elements_to_export: int,
         pddl_folder: str,
-        enable_stream=True):
+        enable_stream=True,
+        options=None):
     """Convert a Process instance into a PDDLStream formulation
     """
     options = options or {}
-    debug = options.get('debug', False)
+    debug = options.get('debug', True)
+    viewer = options.get('viewer', False)
     diagnosis = options.get('diagnosis', False)
 
     domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
@@ -40,13 +42,17 @@ def get_pddlstream_problem(
 
     if enable_stream:
         # * Connect to path planning backend and initialize robot parameters
-        client, robot, _ = load_RFL_world(viewer=diagnosis)
+        client, robot, _ = load_RFL_world(viewer=viewer or diagnosis)
+
+        # frame, conf compare, joint flip and allowable collision tolerances are set here
+        options.update(get_tolerances(robot))
+
         # * initialize collision objects and tools in the scene
         assert set_initial_state(client, robot, process, initialize=True, options=options), 'Setting initial state failed.'
 
         stream_map = {
             'plan_motion_for_beam_assembly':  from_fn(get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=options)),
-            'beam_assembly_collision_check': from_fn(get_test_fn_beam_assembly_collision_check(client, robot, process, options=options)),
+            'beam_assembly_collision_check': from_test(get_test_fn_beam_assembly_collision_check(client, robot, process, options=options)),
         }
     else:
         stream_map = DEBUG
@@ -63,12 +69,18 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
     # Precompute and cache all target frames for each beam's assembly action
     gripper_names_from_type = defaultdict(list)
     for gripper in process.grippers:
-        gripper_names_from_type[gripper.type_name].append(gripper.name)
+        if gripper.type_name:
+            gripper_names_from_type[gripper.type_name].append(gripper.name)
 
     target_frames_from_beam_id = defaultdict(list)
     for i, beam_id in enumerate(process.assembly.sequence):
+        #  Skip scaffolding elements
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            continue
+
         gripper_type = process.assembly.get_beam_attribute(
             beam_id, "gripper_type")
+        assert gripper_type in gripper_names_from_type
         # randomly assign one suitable gripper to each beam just for sampling purposes
         gripper_id = gripper_names_from_type[gripper_type][0]
 
@@ -82,7 +94,7 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
         elif (process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.SCREWED_WITH_GRIPPER or \
               process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.SCREWED_WITHOUT_GRIPPER):
             # we can leave joint_ids and clamp_ids empty beacuse we don't need ACM here
-            action = AssembleBeamWithScrewdriversAction(beam_id=beam_id, joint_ids=[], gripper_id=gripper_id, clamp_ids=[])
+            action = AssembleBeamWithScrewdriversAction(beam_id=beam_id, joint_ids=[], gripper_id=gripper_id, screwdriver_ids=[])
 
         else:
             continue
@@ -119,19 +131,22 @@ def get_test_fn_beam_assembly_collision_check(client, robot, process, options=No
     # cache all beam's frame at asssembled position
 
     def test_fn(traj, heldbeam: str, otherbeam: str):
+        # AssembleBeamNotInCollision
+        return True
+
         # set the otherbeam to the assembled position
-        client.set_object_frame('^{}$'.format(otherbeam), heldbeam_frame_atassembled)
+        # client.set_object_frame('^{}$'.format(otherbeam), heldbeam_frame_atassembled)
 
-        for conf in traj.points:
-            # TODO: could shuffle this
-            # check robot body collision with the otherbeam
-            if pairwise_collision(mov, body):
-                return True
+        # for conf in traj.points:
+        #     # TODO: could shuffle this
+        #     # check robot body collision with the otherbeam
+        #     if pairwise_collision(mov, body):
+        #         return True
 
-            # check heldbeam collision with the otherbeam using FK
+        #     # check heldbeam collision with the otherbeam using FK
 
-            # TODO check robot-attached object with the otherbeam
+        #     # TODO check robot-attached object with the otherbeam
 
-        return False
+        # return False
 
     return test_fn

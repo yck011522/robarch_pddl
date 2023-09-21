@@ -1,5 +1,7 @@
+from termcolor import colored
 import pybullet_planning as pp
 from compas_fab.robots import Configuration, Robot
+from compas_fab.robots import JointTrajectory, Duration, JointTrajectoryPoint
 from compas_fab_pychoreo.client import PyChoreoClient
 from compas_fab_pychoreo.conversions import pose_from_frame
 
@@ -10,17 +12,17 @@ from integral_timber_joints.planning.stream import _get_sample_bare_arm_ik_fn
 
 from utils import LOGGER
 
-def sample_ik_for_target_frames(client: PyChoreoClient, robot: Robot, frames, options=None):
+def sample_ik_for_target_frames(client: PyChoreoClient, robot: Robot, frames, group=None, options=None):
     debug = options.get('debug', False)
     verbose = options.get('verbose', False)
-    gantry_attempts = options.get('gantry_attempts', 50)
+    gantry_attempts = options.get('gantry_attempts', 100)
     reachable_range = options.get('reachable_range', (0.2, 2.4))
 
     sample_ik_fn = _get_sample_bare_arm_ik_fn(client, robot)
     gantry_arm_joint_names = robot.get_configurable_joint_names(group=GANTRY_ARM_GROUP)
     gantry_arm_joint_types = robot.get_joint_types_by_names(gantry_arm_joint_names)
 
-    found_confs = [None for _ in frames]
+    confs = []
     with pp.WorldSaver():
         for i, end_t0cf_frame in enumerate(frames):
             sample_found = False
@@ -54,8 +56,18 @@ def sample_ik_for_target_frames(client: PyChoreoClient, robot: Robot, frames, op
 
             # ! return None if one of the movement cannot find an IK solution
             if not sample_found:
+                LOGGER.debug(colored('IK sample NOT found after {} gantry iters.'.format(gantry_iter), 'red'))
                 return None
             else:
-                found_confs[i] = full_conf
+                confs.append(full_conf)
 
-    return (found_confs,)
+    jt_traj_pts = []
+    for i, conf in enumerate(confs):
+        jt_traj_pt = JointTrajectoryPoint(joint_values=conf.joint_values, joint_types=conf.joint_types, time_from_start=Duration(i*1,0))
+        jt_traj_pt.joint_names = conf.joint_names
+        jt_traj_pts.append(jt_traj_pt)
+
+    trajectory = JointTrajectory(trajectory_points=confs,
+        joint_names=conf.joint_names, start_configuration=confs[0], fraction=1.0)
+
+    return (trajectory,)

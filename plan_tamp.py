@@ -44,13 +44,25 @@ def main():
     # parser.add_argument('--fd_search', default='ff-eager', help='downward search configuration.')
 
     # * Debugs, verbose and visuals
+    parser.add_argument('--viewer', action='store_true', help='Enables the viewer during planning, default False')
     parser.add_argument('--debug', action='store_true', help='Debug mode.')
+    parser.add_argument('--diagnosis', action='store_true', help='Diagnosis mode.')
     #
     args = parser.parse_args()
     LOGGER.info(f'Arguments: {args}')
 
+    # logging_level = logging.DEBUG 
     logging_level = logging.DEBUG if args.debug else logging.INFO
     LOGGER.setLevel(logging_level)
+
+    #########
+    options = {
+        'viewer' : args.viewer,
+        # 'debug' : args.debug,
+        'diagnosis' : args.diagnosis,
+        # 'reinit_tool' : args.reinit_tool,
+        'gantry_attempts' : 100, # number of gantry sampling attempts when computing IK
+    }
 
     #########
     # * Load process and convert to PDDLStream problem
@@ -64,6 +76,7 @@ def main():
             num_elements_to_export = args.num_elements_to_export,
             pddl_folder = pddl_folder,
             enable_stream = not args.disable_stream,
+            options=options
             )
 
         set_cost_scale(1)
@@ -76,7 +89,8 @@ def main():
                             #  unit_efforts=True,
                             #  effort_weight=effort_weight,
                              max_planner_time=INF,
-                             debug=args.debug, verbose=1, 
+                            #  debug=args.debug, 
+                             verbose=1, 
                             #  algorithm='incremental',
                             )
 
