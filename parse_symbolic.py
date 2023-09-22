@@ -1,16 +1,11 @@
 import os
-import re
-from termcolor import colored, cprint
-from itertools import chain
-from collections import defaultdict
+from termcolor import colored
 import argparse
 
 import load_pddlstream
 
 from pddlstream.utils import read, write
-from pddlstream.language.stream import DEBUG
-from pddlstream.language.constants import And, Equal, PDDLProblem
-from pddlstream.language.generator import from_gen_fn, from_fn, from_test
+from pddlstream.language.constants import And, Equal, TOTAL_COST
 from pddlstream.language.temporal import parse_domain
 
 from integral_timber_joints.process import RobotClampAssemblyProcess
@@ -21,7 +16,7 @@ from integral_timber_joints.assembly import BeamAssemblyMethod
 
 from load_pddlstream import HERE
 from utils import LOGGER
-from write_pddl import pddl_problem_with_original_names
+from export_pddl_utils import pddl_problem_with_original_names
 
 #################################################
 
@@ -241,36 +236,6 @@ def process_to_init_goal_scaffolding(
 
 
 # Utility functions for parsing
-
-def get_pddlstream_problem(
-        process: RobotClampAssemblyProcess,
-        case_number: int,
-        num_elements_to_export: int,
-        pddl_folder: str,
-        enable_stream=True,
-        **kwargs):
-    """Convert a Process instance into a PDDLStream formulation
-    """
-
-    domain_pddl = read(os.path.join(pddl_folder, 'domain.pddl'))
-    stream_pddl = read(os.path.join(HERE, pddl_folder, 'stream.pddl'))
-
-    init, goal = process_to_init_goal_by_case(
-        process, case_number, [], [], num_elements_to_export=num_elements_to_export)
-
-    if enable_stream:
-        stream_map = {
-            # 'sample-place_clamp_to_structure':  from_fn(get_action_ik_fn(client, robot, process, 'place_clamp_to_structure', options=options)),
-        }
-    else:
-        stream_map = DEBUG
-
-    constant_map = {}
-    pddlstream_problem = PDDLProblem(
-        domain_pddl, constant_map, stream_pddl, stream_map, init, goal)
-
-    return pddlstream_problem
-
 
 def export_pddl(domain_name, init, goal, pddl_folder, problem_name):
     """export PDDL domain file

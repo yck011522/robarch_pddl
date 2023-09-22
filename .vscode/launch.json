@@ -16,7 +16,7 @@
             "name": "Parse CantiBoxLeft All Cases",
             "type": "python",
             "request": "launch",
-            "program": "parse.py",
+            "program": "parse_symbolic.py",
             "args": [
                 "--planning_cases",
                 "1","2","3","4","5","6",
@@ -34,7 +34,7 @@
             "name": "Parse CantiBoxMid All Cases",
             "type": "python",
             "request": "launch",
-            "program": "parse.py",
+            "program": "parse_symbolic.py",
             "args": [
                 "--planning_cases",
                 "1","2","3","4","5","6",
@@ -52,7 +52,7 @@
             "name": "Parse CantiBoxRight All Cases",
             "type": "python",
             "request": "launch",
-            "program": "parse.py",
+            "program": "parse_symbolic.py",
             "args": [
                 "--planning_cases",
                 "1","2","3","4","5","6",
@@ -106,15 +106,13 @@
             "justMyCode": true
         },
         {
-            "name": "plan tamp",
+            "name": "Plan TAMP FD 1Problem Case 4",
             "type": "python",
             "request": "launch",
             "program": "plan_tamp.py",
             "args": [
-                "--pddl_folder",
-                "itj_gripper_collision",
-                // "itj_clamps",
-                // "itj_gripper_ik",
+                "--planning_case",
+                "4",
                 "--process",
                 // "CantiBoxLeft_10pcs_process.json",
                 "CantiBoxLeft_process.json",
@@ -122,12 +120,13 @@
                 // "210916_SymbolicPlanning",
                 "220407_CantiBoxLeft",
                 "--debug",
-                "--disable_stream",
-                "--no_joint_tools",
-                "--no_scaffolding",
+                // "--viewer",
+                // "--disable_stream",
+                "--output_to_console",
+                "--output_to_file",
             ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         },
     ]
 }
