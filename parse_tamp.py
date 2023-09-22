@@ -1,6 +1,10 @@
 import os
 from collections import defaultdict
 
+import pybullet_planning as pp
+from compas_fab.robots import Robot, AttachedCollisionMesh, CollisionMesh
+from compas_fab_pychoreo.client import PyChoreoClient
+
 import load_pddlstream
 from pddlstream.utils import read, write
 from pddlstream.language.stream import DEBUG
@@ -42,7 +46,7 @@ def get_pddlstream_problem(
 
     if enable_stream:
         # * Connect to path planning backend and initialize robot parameters
-        client, robot, _ = load_RFL_world(viewer=viewer or diagnosis)
+        client, robot, _ = load_RFL_world(viewer=viewer or diagnosis, verbose=True)
 
         # frame, conf compare, joint flip and allowable collision tolerances are set here
         options.update(get_tolerances(robot))
@@ -126,27 +130,68 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
 
     return sample_fn
 
-def get_test_fn_beam_assembly_collision_check(client, robot, process, options=None):
+def get_test_fn_beam_assembly_collision_check(
+        client: PyChoreoClient, 
+        robot: Robot, 
+        process: RobotClampAssemblyProcess,
+        options=None):
     options = options or {}
-    # cache all beam's frame at asssembled position
+
+    toolchanger = process.robot_toolchanger
+    flange_from_toolchanger_base = toolchanger.t_t0cf_from_tcf
+    beam_assembled_frames = {}
+    beam_grasps = {}
+    for beam_id in process.assembly.sequence:
+        # Skip scaffolding elements
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            continue
+
+        # Cache all beam's frame at asssembled position
+        assembly_wcf_final = process.get_gripper_t0cp_for_beam_at(beam_id, 'assembly_wcf_final')
+        beam_assembled_frames[beam_id] = assembly_wcf_final
+
+        # Cache all grasp transformations
+        # ? different gripper might have different grasp for a beam?
+        t_gripper_tcf_from_beam = process.assembly.get_t_gripper_tcf_from_beam(beam_id)
+        beam_gripper_id = process.assembly.get_beam_attribute(beam_id, "gripper_id")
+        beam_gripper = process.tool(beam_gripper_id)
+        flange_from_beam = flange_from_toolchanger_base * beam_gripper.t_t0cf_from_tcf * t_gripper_tcf_from_beam
+        beam_grasps[beam_id] = flange_from_beam
+
+    flange_link_name = process.ROBOT_END_LINK
+    touched_robot_links = []
+    attached_object_base_link_name = None
 
     def test_fn(traj, heldbeam: str, otherbeam: str):
-        # AssembleBeamNotInCollision
-        return True
-
+        # Returns: AssembleBeamNotInCollision
         # set the otherbeam to the assembled position
-        # client.set_object_frame('^{}$'.format(otherbeam), heldbeam_frame_atassembled)
+        assemble_beam_not_in_collision = False
+        with pp.WorldSaver():
+            client.set_object_frame('^{}$'.format(otherbeam), beam_assembled_frames[otherbeam])
 
-        # for conf in traj.points:
-        #     # TODO: could shuffle this
-        #     # check robot body collision with the otherbeam
-        #     if pairwise_collision(mov, body):
-        #         return True
+            # Create attachments for the heldbeam
+            client.add_attached_collision_mesh(
+                AttachedCollisionMesh(CollisionMesh(None, heldbeam),
+                                      flange_link_name, touch_links=touched_robot_links),
+                options={'robot': robot,
+                         'attached_child_link_name': attached_object_base_link_name,
+                         'parent_link_from_child_link_transformation' : beam_grasps[heldbeam],
+                         })
 
-        #     # check heldbeam collision with the otherbeam using FK
+            for conf in traj.points:
+                # TODO: could shuffle this
 
-        #     # TODO check robot-attached object with the otherbeam
+                # check robot and heldbeam collision with the otherbeam using FK
+                # ! this checks a lot more than what we need here
+                # so there are rooms for acceleration, but the code will get more complicated
+                assemble_beam_not_in_collision = not client.check_collisions(robot, conf, options=options)
 
-        # return False
+                if not assemble_beam_not_in_collision:
+                    # early return if collision found
+                    break
+
+        # clean up the attached object
+        client.detach_attached_collision_mesh(heldbeam, options={})
+        return assemble_beam_not_in_collision
 
     return test_fn
