@@ -12,7 +12,7 @@ from pddlstream.algorithms.instantiate_task import sas_from_pddl, instantiate_ta
 from pddlstream.language.attachments import solve_pyplanners
 from pddlstream.utils import Verbose
 
-from utils import LOGGER, print_itj_pddl_plan, save_itj_pddl_plan
+from utils import LOGGER, print_itj_pddl_plan, save_plan_text, save_plan_dict
 from parse_symbolic import PDDL_FOLDERS, DOMAIN_NAMES, HERE
 
 def dump_plan(plan, cost):
@@ -91,9 +91,18 @@ def main():
 
                 # Output to File
                 if args.output_to_file:
-                    pddl_plan_result_file_name = 'result_' + process_file_name + '_' + symbolic_planner_name + '.txt'
-                    LOGGER.info('Plan result saved to {}.'.format(pddl_plan_result_file_name))
-                    save_itj_pddl_plan(plan, pddl_folder, pddl_plan_result_file_name)
+                    if is_plan(plan):
+                        # Save text excerpt
+                        text_result_file_name = 'result_' + process_file_name + '_' + symbolic_planner_name + '.txt'
+                        save_plan_text(plan, pddl_folder, text_result_file_name)
+                        LOGGER.info('Plan Text result saved to {}.'.format(text_result_file_name))
+                        
+                        # Save tamp result for visualization
+                        dict_result_file_name = 'result_' + process_file_name + '_' + symbolic_planner_name + '.json'
+                        save_plan_dict(plan, pddl_folder, dict_result_file_name)
+                        LOGGER.info('Plan Json result saved to {}.'.format(dict_result_file_name))
+                    else:
+                        LOGGER.info('No plan found, no result saved.')
 
 if __name__ == '__main__':
     main()
