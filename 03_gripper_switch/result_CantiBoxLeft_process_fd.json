@@ -1,0 +1,346 @@
+[
+    {
+        "seq_n": 0,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "pg1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b1",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b1"
+    },
+    {
+        "seq_n": 1,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b7",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b7"
+    },
+    {
+        "seq_n": 2,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b3",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b3"
+    },
+    {
+        "seq_n": 3,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b8",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b8"
+    },
+    {
+        "seq_n": 4,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b18",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b18"
+    },
+    {
+        "seq_n": 5,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b19",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b19"
+    },
+    {
+        "seq_n": 6,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b0",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b0"
+    },
+    {
+        "seq_n": 7,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b5",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b5"
+    },
+    {
+        "seq_n": 8,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b14",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b14"
+    },
+    {
+        "seq_n": 9,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b13",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b13"
+    },
+    {
+        "seq_n": 10,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b12",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b12"
+    },
+    {
+        "seq_n": 11,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b2",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b2"
+    },
+    {
+        "seq_n": 12,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b9",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b9"
+    },
+    {
+        "seq_n": 13,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b6",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b6"
+    },
+    {
+        "seq_n": 14,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b4",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b4"
+    },
+    {
+        "seq_n": 15,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b16",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b16"
+    },
+    {
+        "seq_n": 16,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b10",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b10"
+    },
+    {
+        "seq_n": 17,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b17",
+                    "g3",
+                    "pg1500",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b17"
+    },
+    {
+        "seq_n": 18,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "pg1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g2",
+                    "pg1000"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b15",
+                    "g2",
+                    "pg1000",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b15"
+    },
+    {
+        "seq_n": 19,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_with_gripper",
+                "args": [
+                    "b11",
+                    "g2",
+                    "pg1000",
+                    "b0"
+                ]
+            }
+        ],
+        "beam_id": "b11"
+    }
+]
