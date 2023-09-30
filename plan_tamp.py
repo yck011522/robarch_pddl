@@ -12,7 +12,7 @@ from pddlstream.utils import flatten, Profiler, SEPARATOR, inf_generator, INF
 from pddlstream.algorithms.meta import solve
 from integral_timber_joints.planning.parsing import parse_process
 
-from utils import LOGGER, print_itj_pddl_plan, save_itj_pddl_plan
+from utils import LOGGER, print_itj_pddl_plan, save_plan_text, save_plan_dict
 from parse_symbolic import PDDL_FOLDERS
 from parse_tamp import get_pddlstream_problem
 
@@ -93,7 +93,7 @@ def main():
                          max_planner_time=INF,
                         #  debug=args.debug, 
                          verbose=1, 
-                        #  algorithm='incremental',
+                         algorithm='incremental',
                         )
 
         plan, cost, evaluations = solution
@@ -111,18 +111,16 @@ def main():
             # Output to File
             if args.output_to_file:
                 with_stream = 'with_stream' if not args.disable_stream else 'without_stream'
-                pddl_plan_result_file_name = 'result_' + args.process + '_' + with_stream + '.txt'
-                LOGGER.info('Plan result saved to {}.'.format(pddl_plan_result_file_name))
-                save_itj_pddl_plan(plan, pddl_folder, pddl_plan_result_file_name)
+                text_result_file_name = 'result_' + args.process + '_' + with_stream + '.txt'
+                LOGGER.info('Plan result saved to {}.'.format(text_result_file_name))
+                save_plan_text(plan, pddl_folder, text_result_file_name)
 
-    # if plan_success:
-    #     LOGGER.info(f'Plan length: {len(plan)}')
-    #     if plan_success and args.write:
-    #         # save_pddlstream_plan_to_itj_process(process, plan, args.design_dir, args.problem, verbose=1, save_subdir=args.save_dir)
-
-    #         log_file_path = os.path.join(os.path.dirname(get_process_path(args.design_dir, args.problem, args.save_dir)), os.path.basename(args.problem).split('.')[0] + '.log')
-    #         process.debug_print_process_actions_movements(log_file_path)
-    #         LOGGER.info(f"Action Log saved to: {log_file_path}")
+                # Save tamp result for visualization
+                dict_result_file_name = 'result_' + args.process + '_' + with_stream + '.json'
+                save_plan_dict(plan, pddl_folder, dict_result_file_name)
+                LOGGER.info('Plan Json result saved to {}.'.format(dict_result_file_name))
+        else:
+            LOGGER.info('No plan found, no result saved.')
 
 if __name__ == '__main__':
     main()
