@@ -14,18 +14,18 @@ from pddlstream.language.constants import is_plan, DurativeAction, Action, Strea
 def get_logger(name):
     logger = logging.getLogger(name)
 
-    # try:
-    #     from colorlog import ColoredFormatter
-    #     formatter = ColoredFormatter("%(log_color)s%(levelname)-8s%(reset)s %(white)s%(message)s",
-    #                                  datefmt=None,
-    #                                  reset=True,
-    #                                  log_colors={'DEBUG': 'cyan', 'INFO': 'green',
-    #                                              'WARNING': 'yellow',
-    #                                              'ERROR': 'red', 'CRITICAL': 'red',
-    #                                              }
-    #                                  )
-    # except ImportError:
-    #     formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+    try:
+        from colorlog import ColoredFormatter
+        formatter = ColoredFormatter("%(log_color)s%(levelname)-8s%(reset)s %(white)s%(message)s",
+                                     datefmt=None,
+                                     reset=True,
+                                     log_colors={'DEBUG': 'cyan', 'INFO': 'green',
+                                                 'WARNING': 'yellow',
+                                                 'ERROR': 'red', 'CRITICAL': 'red',
+                                                 }
+                                     )
+    except ImportError:
+        formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
 
     formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
 

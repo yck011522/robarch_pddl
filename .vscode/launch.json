@@ -120,7 +120,7 @@
                 // "210916_SymbolicPlanning",
                 "220407_CantiBoxLeft",
                 "--debug",
-                // "--viewer",
+                "--viewer",
                 // "--disable_stream",
                 "--output_to_console",
                 "--output_to_file",
