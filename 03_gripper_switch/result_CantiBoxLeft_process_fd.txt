@@ -1,4 +1,4 @@
-  1: pick_gripper_from_storage g3
+  1: pick_gripper_from_storage g3 pg1500
   2: assemble_beam_with_gripper b1 g3 pg1500 b0
   3: assemble_beam_with_gripper b7 g3 pg1500 b0
   4: assemble_beam_with_gripper b3 g3 pg1500 b0
@@ -17,8 +17,8 @@
  17: assemble_beam_with_gripper b16 g3 pg1500 b0
  18: assemble_beam_with_gripper b10 g3 pg1500 b0
  19: assemble_beam_with_gripper b17 g3 pg1500 b0
- 20: place_gripper_to_storage g3
- 21: pick_gripper_from_storage g2
+ 20: place_gripper_to_storage g3 pg1500
+ 21: pick_gripper_from_storage g2 pg1000
  22: assemble_beam_with_gripper b15 g2 pg1000 b0
  23: assemble_beam_with_gripper b11 g2 pg1000 b0
- 24: place_gripper_to_storage g2
+ 24: place_gripper_to_storage g2 pg1000

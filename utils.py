@@ -111,10 +111,26 @@ def pddl_plan_to_string(plan):
             raise NotImplementedError(action)
     return plan_string_lines
 
-def save_itj_pddl_plan(plan, pddl_folder, file_name):
-    if not is_plan(plan):
-        return
+def pddl_plan_to_dict(plan):
+    seq_n = 0 # Increment after the assembly of each beam
+    act_n = 0 # Increment after every action , resets after new beam
+    sequences = []
     
+    sequence = {'seq_n': seq_n, 'actions': []}
+    for action in plan:
+        if isinstance(action, Action):
+            action_name, args = action
+            sequence['actions'].append({'act_n': act_n, 'action_name': action_name, 'args': args})
+            act_n += 1
+            if action_name.startswith('assemble_beam_'):
+                seq_n += 1
+                act_n = 0
+                sequence['beam_id'] = args[0]
+                sequences.append(sequence)
+                sequence = {'seq_n': seq_n, 'actions': []}
+    return sequences
+
+def save_plan_text(plan, pddl_folder, file_name):  
     # Create folder if not exists
     if not os.path.exists(pddl_folder):
         os.makedirs(pddl_folder)
@@ -124,7 +140,17 @@ def save_itj_pddl_plan(plan, pddl_folder, file_name):
     with open(file_output_path, 'w') as f:
         for line in pddl_plan_to_string(plan):
             f.write(line + '\n')
-            
-        
-##################################
+
+
+def save_plan_dict(plan, pddl_folder, file_name):
+    # Create folder if not exists
+    if not os.path.exists(pddl_folder):
+        os.makedirs(pddl_folder)
+
+    # Save plan to file
+    file_output_path = os.path.join(HERE, pddl_folder, file_name)
+    action_dict = pddl_plan_to_dict(plan)
+    import json
+    with open(file_output_path, 'w') as f:
+        json.dump(action_dict, f, indent=4)
 
