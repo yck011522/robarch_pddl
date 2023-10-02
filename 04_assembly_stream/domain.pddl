@@ -27,7 +27,7 @@
   )
   
 
-    (:action pick_and_place_beam_with_gripper
+    (:action assemble_beam_with_gripper
         :parameters (?beam ?gripper ?grippertype ?traj)
         :precondition (and
             ;; Beam is at storage
