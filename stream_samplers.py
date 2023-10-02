@@ -134,14 +134,22 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
                     # ! since we don't specify anything in the attachment, we only need to check 1 and 3
                     if not client.check_collisions(robot, full_conf, options=options):
                         # do Cartesian planning for the rest of the frames
-                        cart_traj = client.plan_cartesian_motion(robot, target_frames_from_beam_id[beam_id], start_configuration=full_conf, group=cartesian_move_group, options=options)
-                        if cart_traj is not None:
+                        trajectory = [full_conf]
+                        for i in range(1, len(target_frames_from_beam_id[beam_id])):
+                            line_segment = target_frames_from_beam_id[beam_id][i-1:i+1]
+                            cart_traj = client.plan_cartesian_motion(robot, line_segment, start_configuration=trajectory[-1], group=cartesian_move_group, options=options)
+                            if cart_traj is None:
+                                # if any of the Cartesian planning fails, discard the whole sample
+                                break
+                            trajectory.append(cart_traj.points[-1])
+                        # If all target frames are reached, return the trajectory
+                        if len(trajectory) == len(target_frames_from_beam_id[beam_id]):
                             sample_found = True
+                            from compas_fab.robots import JointTrajectory
+                            trajectory = JointTrajectory(trajectory,trajectory[0].joint_names,full_conf,1)
                             LOGGER.debug('Cartesian plan sample found after {} gantry iters.'.format(gantry_iter))
-                            break
                     if sample_found:
                         break
-
                 if sample_found:
                     break
 
@@ -156,10 +164,10 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
             LOGGER.debug(colored('Cartesian plan sample NOT found after {} gantry iters.'.format(gantry_iter), 'red'))
             return None
         else:
-            #     for i, conf in enumerate(cart_traj.points):
+            #     for i, conf in enumerate(trajectory.points):
             #         client.set_robot_configuration(robot, conf)
             #         pp.wait_if_gui(f'Cartesian plan sample #{i}')
-            return (cart_traj,)
+            return (trajectory,)
 
     return sample_fn
 
@@ -205,7 +213,7 @@ def get_test_fn_beam_assembly_collision_check(
 
     def test_fn(traj, heldbeam: str, otherbeam: str):
         # Returns: AssembleBeamNotInCollision
-        # return True
+        return True
 
         # set the otherbeam to the assembled position
         assemble_beam_not_in_collision = False
