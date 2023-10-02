@@ -128,6 +128,8 @@ def pddl_plan_to_dict(plan):
                 sequence['beam_id'] = args[0]
                 sequences.append(sequence)
                 sequence = {'seq_n': seq_n, 'actions': []}
+    if len(sequence['actions']) > 0:
+        sequences.append(sequence)
     return sequences
 
 def save_plan_text(plan, pddl_folder, file_name):  
@@ -151,6 +153,7 @@ def save_plan_dict(plan, pddl_folder, file_name):
     file_output_path = os.path.join(HERE, pddl_folder, file_name)
     action_dict = pddl_plan_to_dict(plan)
     import json
+    from compas.data import DataEncoder
     with open(file_output_path, 'w') as f:
-        json.dump(action_dict, f, indent=4)
+        json.dump(action_dict, f, indent=4, cls=DataEncoder)
 
