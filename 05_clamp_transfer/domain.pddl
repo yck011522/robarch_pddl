@@ -134,8 +134,10 @@
     ;; Gripper Manipulation
     ;; --------------------
     (:action pick_gripper_from_storage
-        :parameters (?gripper)
+    :parameters (?gripper ?grippertype)
         :precondition (and
+            ;; ?gripper and ?grippertype match at input 
+            (GripperOfType ?gripper ?grippertype)
             ;; ?gripper is at storage
             (GripperAtStorage ?gripper)
             ;; Robot is not currently holding a gripper or a clamp
@@ -156,8 +158,10 @@
     )
 
     (:action place_gripper_to_storage
-        :parameters (?gripper)
+        :parameters (?gripper ?grippertype)
         :precondition (and
+            ;; ?gripper and ?grippertype match at input 
+            (GripperOfType ?gripper ?grippertype)
             ;; Robot is currently holding ?gripper
             (GripperAtRobot ?gripper)
             ;; Robot is not currently holding a beam
@@ -176,8 +180,10 @@
     ; ------------------
 
     (:action pick_clamp_from_storage
-        :parameters (?clamp)
+        :parameters (?clamp ?clamptype)
         :precondition (and
+            ;; ?clamp and ?clamptype match at input 
+            (ClampOfType ?clamp ?clamptype)
             ;; Clamp is at storage
             (ClampAtStorage ?clamp)
 
@@ -196,8 +202,10 @@
     )
 
         (:action place_clamp_to_storage
-        :parameters (?clamp)
+        :parameters (?clamp ?clamptype)
         :precondition (and
+            ;; ?clamp and ?clamptype match at input 
+            (ClampOfType ?clamp ?clamptype)
             ;; Robot is currently holding the ?clamp
             (ClampAtRobot ?clamp)
         )
@@ -208,9 +216,11 @@
     )
 
     (:action pick_clamp_from_joint
-        :parameters (?clamp ?beam1 ?beam2)
+        :parameters (?clamp ?clamptype ?beam1 ?beam2)
         :precondition (and
-            ;; Clamp is a valid clamp
+            ;; ?clamp and ?clamptype match at input 
+            (ClampOfType ?clamp ?clamptype)
+            ;; Clamp is at the joint 
             (ClampAtJoint ?clamp ?beam1 ?beam2)
 
             ;; Robot is not currently holding a gripper or a clamp
@@ -226,7 +236,7 @@
     )
 
     (:action place_clamp_to_joint
-        :parameters (?clamp ?beam1 ?beam2 ?clamptype)
+        :parameters (?clamp ?clamptype ?beam1 ?beam2)
         :precondition (and
             ;; Robot is currently holding the ?clamp
             (ClampAtRobot ?clamp)

@@ -73,8 +73,10 @@
     ;; Gripper Manipulation
     ;; --------------------
   (:action pick_gripper_from_storage
-    :parameters (?gripper)
+    :parameters (?gripper ?grippertype)
     :precondition (and
+        ;; ?gripper and ?grippertype match at input 
+        (GripperOfType ?gripper ?grippertype)
         ;; ?gripper is at storage
         (GripperAtStorage ?gripper)
         ;; Robot is not currently holding a gripper
@@ -90,10 +92,10 @@
   )
 
   (:action place_gripper_to_storage
-    :parameters (?gripper)
+    :parameters (?gripper ?grippertype)
     :precondition (and
-        ;; gripper is a valid Gripper
-        ; (Gripper ?gripper) 
+        ;; ?gripper and ?grippertype match at input 
+        (GripperOfType ?gripper ?grippertype)
         ;; Robot is currently holding ?gripper
         (GripperAtRobot ?gripper) 
         ;; Robot is not currently holding a beam
