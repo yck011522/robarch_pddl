@@ -213,7 +213,7 @@ def get_test_fn_beam_assembly_collision_check(
 
     def test_fn(traj, heldbeam: str, otherbeam: str):
         # Returns: AssembleBeamNotInCollision
-        return True
+        # return True
 
         # set the otherbeam to the assembled position
         assemble_beam_not_in_collision = False

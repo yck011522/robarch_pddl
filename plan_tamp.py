@@ -92,8 +92,8 @@ def main():
                         #  effort_weight=effort_weight,
                          max_planner_time=INF,
                         #  debug=args.debug, 
-                         verbose=1, 
-                         algorithm='incremental',
+                         verbose=0, 
+                        #  algorithm='incremental',
                         )
 
         plan, cost, evaluations = solution
