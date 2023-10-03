@@ -129,7 +129,7 @@ def pddl_plan_to_dict(plan):
                 sequences.append(sequence)
                 sequence = {'seq_n': seq_n, 'actions': []}
     if len(sequence['actions']) > 0:
-        sequences.append(sequence)
+        sequences[-1]['actions'].extend(sequence['actions'])
     return sequences
 
 def save_plan_text(plan, pddl_folder, file_name):  
