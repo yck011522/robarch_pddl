@@ -146,7 +146,7 @@
                 "--output_to_console",
                 "--output_to_file",
                 "--num_elements_to_export",
-                "13",
+                "-1",
             ],
             "console": "integratedTerminal",
             "justMyCode": false

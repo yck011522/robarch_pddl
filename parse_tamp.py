@@ -6,7 +6,7 @@ from pddlstream.language.stream import DEBUG
 
 from pddlstream.language.constants import PDDLProblem
 from pddlstream.language.constants import And, Equal, PDDLProblem
-from pddlstream.language.generator import from_gen_fn, from_fn, from_test
+from pddlstream.language.generator import from_gen_fn, from_fn, from_test, from_sampler
 
 from integral_timber_joints.process import RobotClampAssemblyProcess
 from integral_timber_joints.planning.robot_setup import load_RFL_world, get_tolerances
@@ -46,7 +46,7 @@ def get_pddlstream_problem(
         assert set_initial_state(client, robot, process, initialize=True, options=options), 'Setting initial state failed.'
 
         stream_map = {
-            'plan_motion_for_beam_assembly':  from_fn(get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=options)),
+            'plan_motion_for_beam_assembly':  from_sampler(get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=options)),
             'beam_assembly_collision_check': from_test(get_test_fn_beam_assembly_collision_check(client, robot, process, options=options)),
         }
     else:

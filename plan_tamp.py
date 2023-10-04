@@ -93,7 +93,7 @@ def main():
                          max_planner_time=INF,
                         #  debug=args.debug, 
                          verbose=0, 
-                        #  algorithm='incremental',
+                        # search_sample_ratio=1, # the desired ratio of sample time / search time
                         )
 
         plan, cost, evaluations = solution

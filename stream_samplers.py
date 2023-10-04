@@ -162,11 +162,7 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
         # ! return None if one of the movement cannot find an IK solution
         if not sample_found:
             LOGGER.debug(colored('Cartesian plan sample NOT found after {} gantry iters.'.format(gantry_iter), 'red'))
-            return None
         else:
-            #     for i, conf in enumerate(trajectory.points):
-            #         client.set_robot_configuration(robot, conf)
-            #         pp.wait_if_gui(f'Cartesian plan sample #{i}')
             return (trajectory,)
 
     return sample_fn
@@ -243,9 +239,9 @@ def get_test_fn_beam_assembly_collision_check(
                 # check robot and heldbeam collision with the otherbeam using FK
                 # ! this checks a lot more than what we need here
                 # so there are rooms for acceleration, but the code will get more complicated
-                options['diagnosis'] = True
+                # options['diagnosis'] = True
                 assemble_beam_not_in_collision = not client.check_collisions(robot, conf, options=options)
-                options['diagnosis'] = False
+                # options['diagnosis'] = False
 
                 if not assemble_beam_not_in_collision:
                     # early return if collision found
