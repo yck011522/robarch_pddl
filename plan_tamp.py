@@ -92,8 +92,8 @@ def main():
                         #  effort_weight=effort_weight,
                          max_planner_time=INF,
                         #  debug=args.debug, 
-                         verbose=1, 
-                         algorithm='incremental',
+                         verbose=0, 
+                        # search_sample_ratio=1, # the desired ratio of sample time / search time
                         )
 
         plan, cost, evaluations = solution
