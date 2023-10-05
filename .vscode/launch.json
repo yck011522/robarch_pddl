@@ -109,7 +109,7 @@
             "justMyCode": true
         },
         {
-            "name": "Plan Symbolic FD 1Problem Case 5",
+            "name": "Plan Symbolic FD 3Problem Case 5",
             "type": "python",
             "request": "launch",
             "program": "plan_pddl.py",
@@ -118,6 +118,8 @@
                 "5",
                 "--process_file_name",
                 "CantiBoxLeft_process",
+                "CantiBoxMid_process",
+                "CantiBoxRight_process",
                 "--symbolic_planner",
                 "fd",
                 "--output_to_file",
