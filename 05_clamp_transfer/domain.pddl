@@ -134,7 +134,7 @@
     ;; Gripper Manipulation
     ;; --------------------
     (:action pick_gripper_from_storage
-    :parameters (?gripper ?grippertype)
+        :parameters (?gripper ?grippertype)
         :precondition (and
             ;; ?gripper and ?grippertype match at input 
             (GripperOfType ?gripper ?grippertype)
