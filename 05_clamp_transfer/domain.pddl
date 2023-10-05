@@ -179,7 +179,7 @@
     ; Clamp Manipulation
     ; ------------------
 
-    (:action pick_clamp_from_storage
+    (:action retrieve_clamp_from_storage
         :parameters (?clamp ?clamptype)
         :precondition (and
             ;; ?clamp and ?clamptype match at input 
@@ -201,7 +201,7 @@
         )
     )
 
-        (:action place_clamp_to_storage
+    (:action store_clamp_to_storage
         :parameters (?clamp ?clamptype)
         :precondition (and
             ;; ?clamp and ?clamptype match at input 
@@ -215,7 +215,7 @@
         )
     )
 
-    (:action pick_clamp_from_joint
+    (:action detach_clamp_from_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2)
         :precondition (and
             ;; ?clamp and ?clamptype match at input 
@@ -235,7 +235,7 @@
         )
     )
 
-    (:action place_clamp_to_joint
+    (:action attach_clamp_to_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2)
         :precondition (and
             ;; Robot is currently holding the ?clamp
