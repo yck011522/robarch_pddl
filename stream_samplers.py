@@ -24,6 +24,9 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
     for gripper in process.grippers:
         if gripper.type_name:
             gripper_names_from_type[gripper.type_name].append(gripper.name)
+    for screwdriver in process.screwdrivers:
+        if screwdriver.type_name:
+            gripper_names_from_type[screwdriver.type_name].append(screwdriver.name)
 
     toolchanger = process.robot_toolchanger
     flange_from_toolchanger_base = toolchanger.t_t0cf_from_tcf

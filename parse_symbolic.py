@@ -98,26 +98,25 @@ def process_to_init_goal_grippers(
         init=[], goal=[],
         num_elements_to_export=-1,
         declare_static=False,
-        replace_non_existent_gripper=True,
 ):
     """Convert a Process instance into a PDDLStream problem formulation
     """
     # * Gripper Tool
     available_gripper_types = []
-    for gripper in process.grippers:
+    for screwdriver in process.grippers:
         # Declare init and goal predicates
         init.extend([
-            ('GripperAtStorage', gripper.name),
-            ('GripperOfType', gripper.name, gripper.type_name),
+            ('GripperAtStorage', screwdriver.name),
+            ('GripperOfType', screwdriver.name, screwdriver.type_name),
         ])
         goal.extend([
-            ('GripperAtStorage', gripper.name),
+            ('GripperAtStorage', screwdriver.name),
         ])
-        available_gripper_types.append(gripper.type_name)
+        available_gripper_types.append(screwdriver.type_name)
         # Declare static predicate of gripper
         if declare_static:
             init.extend([
-                ('Gripper', gripper.name),
+                ('Gripper', screwdriver.name),
             ])
 
     # * Beam Demand Gripper
@@ -129,13 +128,32 @@ def process_to_init_goal_grippers(
             continue
         gripper_type = process.assembly.get_beam_attribute(
             beam_id, "gripper_type")
-        # Replace non existent gripper type with the first gripper type
+
+        # * Declare screwdriver if this beam is a ScrewedWithoutGripper type and this screwdriver has not been declared
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.SCREWED_WITHOUT_GRIPPER and \
+            gripper_type not in available_gripper_types:
+                for screwdriver in process.screwdrivers:
+                    if screwdriver.type_name != gripper_type:
+                        continue
+                    # Declare init and goal predicates
+                    init.extend([
+                        ('GripperAtStorage', screwdriver.name),
+                        ('GripperOfType', screwdriver.name, screwdriver.type_name),
+                    ])
+                    goal.extend([
+                        ('GripperAtStorage', screwdriver.name),
+                    ])
+                    available_gripper_types.append(screwdriver.type_name)
+                    # Declare static predicate of gripper
+                    if declare_static:
+                        init.extend([
+                            ('Gripper', screwdriver.name),
+                        ])
+
         if gripper_type not in available_gripper_types:
-            if replace_non_existent_gripper:
-                gripper_type = available_gripper_types[0]
-            else:
-                raise ValueError(
-                    f"Beam {beam_id} requires gripper type {gripper_type} but not available in the process.")
+            raise ValueError(
+                f"Beam {beam_id} requires gripper type {gripper_type} but not available in the process.")
+
         init.extend([
             ('BeamNeedsGripperType', beam_id, gripper_type),
         ])
