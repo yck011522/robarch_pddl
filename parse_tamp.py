@@ -1,4 +1,6 @@
+from gc import enable
 import os
+from unittest import case
 
 import load_pddlstream
 from pddlstream.utils import read, write
@@ -14,6 +16,7 @@ from integral_timber_joints.planning.state import set_state, set_initial_state
 from load_pddlstream import HERE
 from parse_symbolic import process_to_init_goal_by_case
 from stream_samplers import get_sample_fn_plan_motion_for_beam_assembly, get_test_fn_beam_assembly_collision_check
+from utils import LOGGER
 
 def get_pddlstream_problem(
         process: RobotClampAssemblyProcess,
@@ -35,6 +38,10 @@ def get_pddlstream_problem(
     init, goal = process_to_init_goal_by_case(
         process, case_number, [], [], num_elements_to_export=num_elements_to_export)
 
+    if case_number in [1,2,3,5] and enable_stream:
+        enable_stream = False
+        LOGGER.warning('Case {} is a symbolic-only domain, stream is disabled.'.format(case_number))
+
     if enable_stream:
         # * Connect to path planning backend and initialize robot parameters
         client, robot, _ = load_RFL_world(viewer=viewer or diagnosis, verbose=True)
@@ -45,10 +52,12 @@ def get_pddlstream_problem(
         # * initialize collision objects and tools in the scene
         assert set_initial_state(client, robot, process, initialize=True, options=options), 'Setting initial state failed.'
 
-        stream_map = {
-            'plan_motion_for_beam_assembly':  from_sampler(get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=options)),
-            'beam_assembly_collision_check': from_test(get_test_fn_beam_assembly_collision_check(client, robot, process, options=options)),
-        }
+        stream_map = {}
+        if case_number == 4:
+            stream_map.update(get_beam_assembly_streams(client, robot, process, options))
+        elif case_number == 6 or case_number == 7:
+            stream_map.update(get_beam_assembly_streams(client, robot, process, options))
+            # stream_map.update(get_clamp_transfer_streams(client, robot, process, options))
     else:
         stream_map = DEBUG
 
@@ -58,3 +67,8 @@ def get_pddlstream_problem(
 
     return pddlstream_problem
 
+def get_beam_assembly_streams(client, robot, process, options):
+    return {
+            'plan_motion_for_beam_assembly':  from_sampler(get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=options)),
+            'beam_assembly_collision_check': from_test(get_test_fn_beam_assembly_collision_check(client, robot, process, options=options)),
+        }
