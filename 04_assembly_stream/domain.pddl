@@ -58,12 +58,7 @@
                   (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
                                      ))
             )
-            ; (forall (?otherbeam) (imply 
-            ;     (BeamAtAssembled ?otherbeam)
-            ;     (AssembleBeamNotInCollision ?traj ?beam ?otherbeam)
-            ;                        ))
-
-              )
+        )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
             (BeamAtAssembled ?beam) ;; Beam now at assembled

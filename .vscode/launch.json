@@ -199,5 +199,28 @@
             "console": "integratedTerminal",
             "justMyCode": false
         },
+        {
+            "name": "Plan TAMP FD LeftBox Case 6",
+            "type": "python",
+            "request": "launch",
+            "program": "plan_tamp.py",
+            "args": [
+                "--planning_case",
+                "6",
+                "--process",
+                "CantiBoxLeft_process.json",
+                "--design_dir",
+                "220407_CantiBoxLeft",
+                "--debug",
+                // "--viewer",
+                // "--disable_stream",
+                "--output_to_console",
+                "--output_to_file",
+                "--num_elements_to_export",
+                "-1",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
     ]
 }
