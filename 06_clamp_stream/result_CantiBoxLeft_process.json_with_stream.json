@@ -1,0 +1,1006 @@
+[
+    {
+        "seq_n": 0,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "assemble_beam_by_ground_connection",
+                "args": [
+                    "b1",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b1"
+    },
+    {
+        "seq_n": 1,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_ground_connection",
+                "args": [
+                    "b0",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b0"
+    },
+    {
+        "seq_n": 2,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "retrieve_clamp_from_storage",
+                "args": [
+                    "c4",
+                    "CL3M"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b0",
+                    "b2"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "retrieve_clamp_from_storage",
+                "args": [
+                    "c1",
+                    "CL3"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b1",
+                    "b3"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "retrieve_clamp_from_storage",
+                "args": [
+                    "c2",
+                    "CL3"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b1",
+                    "b7"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b7",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b7"
+    },
+    {
+        "seq_n": 3,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b3",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b3"
+    },
+    {
+        "seq_n": 4,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b2",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b2"
+    },
+    {
+        "seq_n": 5,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b0",
+                    "b2"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b7",
+                    "b8"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "retrieve_clamp_from_storage",
+                "args": [
+                    "c3",
+                    "CL3M"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b0",
+                    "b5"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b1",
+                    "b3"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b3",
+                    "b8"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b8",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b8"
+    },
+    {
+        "seq_n": 6,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b5",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b5"
+    },
+    {
+        "seq_n": 7,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b3",
+                    "b8"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b3",
+                    "b18"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b0",
+                    "b5"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b2",
+                    "b16"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b7",
+                    "b8"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b5",
+                    "b16"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b1",
+                    "b7"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b7",
+                    "b18"
+                ]
+            },
+            {
+                "act_n": 9,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 10,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b16",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b16"
+    },
+    {
+        "seq_n": 8,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b18",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b18"
+    },
+    {
+        "seq_n": 9,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_screwing_method",
+                "args": [
+                    "b19",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b19"
+    },
+    {
+        "seq_n": 10,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b2",
+                    "b16"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b7",
+                    "b12"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b5",
+                    "b16"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b2",
+                    "b6"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b3",
+                    "b18"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b5",
+                    "b12"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b7",
+                    "b18"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b5",
+                    "b6"
+                ]
+            },
+            {
+                "act_n": 9,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 10,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b12",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b12"
+    },
+    {
+        "seq_n": 11,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b6",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b6"
+    },
+    {
+        "seq_n": 12,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_screwing_method",
+                "args": [
+                    "b17",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b17"
+    },
+    {
+        "seq_n": 13,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b5",
+                    "b12"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b3",
+                    "b10"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b7",
+                    "b12"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b2",
+                    "b10"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b5",
+                    "b6"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b2",
+                    "b9"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b2",
+                    "b6"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b3",
+                    "b9"
+                ]
+            },
+            {
+                "act_n": 9,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 10,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b9",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b9"
+    },
+    {
+        "seq_n": 14,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b10",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b10"
+    },
+    {
+        "seq_n": 15,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c4",
+                    "CL3M",
+                    "b3",
+                    "b9"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "store_clamp_to_storage",
+                "args": [
+                    "c4",
+                    "CL3M"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b2",
+                    "b10"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b2",
+                    "b4"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b2",
+                    "b9"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b3",
+                    "b4"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b4",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b4"
+    },
+    {
+        "seq_n": 16,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c3",
+                    "CL3M",
+                    "b2",
+                    "b4"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "store_clamp_to_storage",
+                "args": [
+                    "c3",
+                    "CL3M"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b3",
+                    "b10"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b5",
+                    "b13"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b3",
+                    "b4"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b7",
+                    "b13"
+                ]
+            },
+            {
+                "act_n": 7,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 8,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b13",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b13"
+    },
+    {
+        "seq_n": 17,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b5",
+                    "b13"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b5",
+                    "b14"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b7",
+                    "b13"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "attach_clamp_to_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b7",
+                    "b14"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "assemble_beam_by_clamping_method",
+                "args": [
+                    "b14",
+                    "g3",
+                    "PG1500"
+                ]
+            }
+        ],
+        "beam_id": "b14"
+    },
+    {
+        "seq_n": 18,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c1",
+                    "CL3",
+                    "b5",
+                    "b14"
+                ]
+            },
+            {
+                "act_n": 2,
+                "action_name": "store_clamp_to_storage",
+                "args": [
+                    "c1",
+                    "CL3"
+                ]
+            },
+            {
+                "act_n": 3,
+                "action_name": "detach_clamp_from_structure",
+                "args": [
+                    "c2",
+                    "CL3",
+                    "b7",
+                    "b14"
+                ]
+            },
+            {
+                "act_n": 4,
+                "action_name": "store_clamp_to_storage",
+                "args": [
+                    "c2",
+                    "CL3"
+                ]
+            },
+            {
+                "act_n": 5,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g2",
+                    "PG1000"
+                ]
+            },
+            {
+                "act_n": 6,
+                "action_name": "assemble_beam_by_screwing_method",
+                "args": [
+                    "b11",
+                    "g2",
+                    "PG1000"
+                ]
+            }
+        ],
+        "beam_id": "b11"
+    },
+    {
+        "seq_n": 19,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "assemble_beam_by_screwing_method",
+                "args": [
+                    "b15",
+                    "g2",
+                    "PG1000"
+                ]
+            },
+            {
+                "act_n": 0,
+                "action_name": "place_gripper_to_storage",
+                "args": [
+                    "g2",
+                    "PG1000"
+                ]
+            }
+        ],
+        "beam_id": "b15"
+    }
+]
