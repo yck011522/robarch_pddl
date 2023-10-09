@@ -3,7 +3,7 @@ from itertools import product
 from termcolor import colored
 
 import pybullet_planning as pp
-from compas_fab.robots import Configuration, Robot, AttachedCollisionMesh, CollisionMesh
+from compas_fab.robots import Configuration, Robot, AttachedCollisionMesh, CollisionMesh, JointTrajectory
 from compas_fab_pychoreo.client import PyChoreoClient
 from compas_fab_pychoreo.conversions import pose_from_frame
 
@@ -72,7 +72,6 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
             if movement.target_configuration is not None:
                 continue
 
-            # * compute IK
             if movement.target_frame is None:
                 LOGGER.error(f'Target frame is None in {movement.short_summary}')
 
@@ -104,9 +103,6 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
  
     def sample_fn(beam_id: str, gripper_type: str):
         with pp.WorldSaver():
-            end_t0cf_frame = target_frames_from_beam_id[beam_id][0]
-            sample_found = False
-
             # Create attachments for the heldbeam
             client.add_attached_collision_mesh(
                 AttachedCollisionMesh(CollisionMesh(None, beam_id),
@@ -116,59 +112,71 @@ def get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=
                          'parent_link_from_child_link_transformation' : beam_grasps[beam_id],
                          })
 
-            # * do rejection sampling only for the robot body and the static obstacles
-            gantry_base_gen_fn = gantry_base_generator(client, robot, end_t0cf_frame, reachable_range=reachable_range, scale=1.0, options=options)
-
-            # cartesian_attempts = 2
-            for gantry_iter, base_conf in zip(range(gantry_attempts), gantry_base_gen_fn):
-                # * bare-arm IK sampler
-                arm_conf_vals = sample_ik_fn(pose_from_frame(end_t0cf_frame, scale=1))
-                # * iterate through all 6-axis IK solution
-                for arm_conf_val in arm_conf_vals:
-                    if arm_conf_val is None:
-                        continue
-                    full_conf = Configuration(list(base_conf.joint_values) + list(arm_conf_val),
-                        gantry_arm_joint_types, gantry_arm_joint_names)
-
-                    # * the collision is checked among:
-                    #     1. robot self-collision (if `self_collisions=true`), ignored robot link pairs can be specified in `disabled_collisions`
-                    #     2. between (robot links) and (attached objects)
-                    #     3. between (robot links, attached objects) and obstacles
-                    # ! since we don't specify anything in the attachment, we only need to check 1 and 3
-                    if not client.check_collisions(robot, full_conf, options=options):
-                        # do Cartesian planning for the rest of the frames
-                        trajectory = [full_conf]
-                        for i in range(1, len(target_frames_from_beam_id[beam_id])):
-                            line_segment = target_frames_from_beam_id[beam_id][i-1:i+1]
-                            cart_traj = client.plan_cartesian_motion(robot, line_segment, start_configuration=trajectory[-1], group=cartesian_move_group, options=options)
-                            if cart_traj is None:
-                                # if any of the Cartesian planning fails, discard the whole sample
-                                break
-                            trajectory.append(cart_traj.points[-1])
-                        # If all target frames are reached, return the trajectory
-                        if len(trajectory) == len(target_frames_from_beam_id[beam_id]):
-                            sample_found = True
-                            from compas_fab.robots import JointTrajectory
-                            trajectory = JointTrajectory(trajectory,trajectory[0].joint_names,full_conf,1)
-                            LOGGER.debug('Cartesian plan sample found after {} gantry iters.'.format(gantry_iter))
-                    if sample_found:
-                        break
-                if sample_found:
-                    break
-
+            gantry_base_gen_fn = gantry_base_generator(client, robot, target_frames_from_beam_id[beam_id][0], 
+                reachable_range=reachable_range, scale=1.0, options=options)
+            trajectory = compute_linear_motion_segements(
+                client, robot, target_frames_from_beam_id[beam_id], 
+                gantry_base_gen_fn, gantry_attempts, gantry_arm_joint_types, gantry_arm_joint_names,
+                sample_ik_fn, cartesian_move_group, 
+                options)
 
             # clean up the attached object and ACM
             client.detach_attached_collision_mesh(beam_id, options={})
             # if temp_name in client.extra_disabled_collision_links:
             #     del client.extra_disabled_collision_links[temp_name]
 
-        # ! return None if one of the movement cannot find an IK solution
-        if not sample_found:
-            LOGGER.debug(colored('Cartesian plan sample NOT found after {} gantry iters.'.format(gantry_iter), 'red'))
-        else:
+        if trajectory is not None:
             return (trajectory,)
 
     return sample_fn
+
+def compute_linear_motion_segements(
+    client, robot, target_frames, 
+    gantry_base_gen_fn, gantry_attempts, gantry_arm_joint_types, gantry_arm_joint_names,
+    sample_ik_fn, cartesian_move_group, 
+    options=None):
+
+    options = options or {}
+    end_t0cf_frame = target_frames[0]
+    sample_found = False
+    trajectory = None
+    for gantry_iter, base_conf in zip(range(gantry_attempts), gantry_base_gen_fn):
+        # * bare-arm IK sampler
+        arm_conf_vals = sample_ik_fn(pose_from_frame(end_t0cf_frame, scale=1))
+        # * iterate through all 6-axis IK solution
+        for arm_conf_val in arm_conf_vals:
+            if arm_conf_val is None:
+                continue
+            full_conf = Configuration(list(base_conf.joint_values) + list(arm_conf_val),
+                gantry_arm_joint_types, gantry_arm_joint_names)
+
+            # * the collision is checked among:
+            #     1. robot self-collision (if `self_collisions=true`), ignored robot link pairs can be specified in `disabled_collisions`
+            #     2. between (robot links) and (attached objects)
+            #     3. between (robot links, attached objects) and obstacles
+            # ! since we don't specify anything in the attachment, we only need to check 1 and 3
+            if not client.check_collisions(robot, full_conf, options=options):
+                # do Cartesian planning for the rest of the frames
+                trajectory = [full_conf]
+                for i in range(1, len(target_frames)):
+                    line_segment = target_frames[i-1:i+1]
+                    cart_traj = client.plan_cartesian_motion(robot, line_segment, start_configuration=trajectory[-1], group=cartesian_move_group, options=options)
+                    if cart_traj is None:
+                        # if any of the Cartesian planning fails, discard the whole sample
+                        break
+                    trajectory.append(cart_traj.points[-1])
+                # If all target frames are reached, return the trajectory
+                if len(trajectory) == len(target_frames):
+                    sample_found = True
+                    trajectory = JointTrajectory(trajectory,trajectory[0].joint_names,full_conf,1)
+                    LOGGER.debug('Cartesian plan sample found after {} gantry iters.'.format(gantry_iter))
+            if sample_found:
+                break
+        if sample_found:
+            break
+    if not sample_found:
+        LOGGER.debug(colored('Cartesian plan sample NOT found after {} gantry iters.'.format(gantry_iter), 'red'))
+    return trajectory
 
 ##########################################
 
