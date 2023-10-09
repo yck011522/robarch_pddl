@@ -40,10 +40,17 @@
         ;; Predicates certified by the streams
         (AssembleBeamTraj ?beam ?traj)
         (AssembleBeamNotInCollision ?traj ?heldbeam ?otherbeam)
+
+        (ClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
+        (AttachClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
+        (DetachClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
+        (ClampTrajNotInCollisionWithClamp ?traj ?heldclamp ?beam1 ?beam2 ?otherclamp)
+        (ClampTrajNotInCollisionWithBeam ?traj ?heldclamp ?beam1 ?beam2 ?otherbeam)
     )
 
     (:action assemble_beam_by_clamping_method
-        :parameters (?beam ?gripper ?grippertype ?traj)
+        :parameters (?beam ?gripper ?grippertype)
+        ; :parameters (?beam ?gripper ?grippertype ?traj)
         :precondition (and
             ;; Beam is at storage
             (BeamAtStorage ?beam)
@@ -73,13 +80,13 @@
                 )
             )
 
-            (AssembleBeamTraj ?beam ?traj)
-            (not
-              (exists (?otherbeam) (and 
-                  (BeamAtAssembled ?otherbeam)
-                  (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
-                                     ))
-            )
+            ; (AssembleBeamTraj ?beam ?traj)
+            ; (not
+            ;   (exists (?otherbeam) (and 
+            ;       (BeamAtAssembled ?otherbeam)
+            ;       (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
+            ;                          ))
+            ; )
             )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
@@ -88,7 +95,8 @@
     )
        
     (:action assemble_beam_by_screwing_method
-        :parameters (?beam ?gripper ?grippertype ?traj)
+        :parameters (?beam ?gripper ?grippertype)
+        ; :parameters (?beam ?gripper ?grippertype ?traj)
         :precondition (and
             ;; Beam is at storage
             (BeamAtStorage ?beam)
@@ -109,13 +117,13 @@
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 
-            (AssembleBeamTraj ?beam ?traj)
-            (not
-              (exists (?otherbeam) (and 
-                  (BeamAtAssembled ?otherbeam)
-                  (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
-                                     ))
-            )
+            ; (AssembleBeamTraj ?beam ?traj)
+            ; (not
+            ;   (exists (?otherbeam) (and 
+            ;       (BeamAtAssembled ?otherbeam)
+            ;       (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
+            ;                          ))
+            ; )
         )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
@@ -124,7 +132,8 @@
     )
 
     (:action assemble_beam_by_ground_connection
-        :parameters (?beam ?gripper ?grippertype ?traj)
+        :parameters (?beam ?gripper ?grippertype)
+        ; :parameters (?beam ?gripper ?grippertype ?traj)
         :precondition (and
             ;; Beam is at storage
             (BeamAtStorage ?beam)
@@ -145,13 +154,13 @@
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 
-            (AssembleBeamTraj ?beam ?traj)
-            (not
-              (exists (?otherbeam) (and 
-                  (BeamAtAssembled ?otherbeam)
-                  (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
-                                     ))
-            )
+            ; (AssembleBeamTraj ?beam ?traj)
+            ; (not
+            ;   (exists (?otherbeam) (and 
+            ;       (BeamAtAssembled ?otherbeam)
+            ;       (not (AssembleBeamNotInCollision ?traj ?beam ?otherbeam))
+            ;                          ))
+            ; )
         )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
@@ -243,7 +252,7 @@
     )
 
     (:action detach_clamp_from_structure
-        :parameters (?clamp ?clamptype ?beam1 ?beam2)
+        :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
             ;; ?clamp and ?clamptype match at input 
             (ClampOfType ?clamp ?clamptype)
@@ -255,6 +264,22 @@
                     (GripperAtRobot ?anytool)))
             (not(exists (?anytool)
                     (ClampAtRobot ?anytool)))
+
+            (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            (DetachClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            (not
+              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+                    (Joint ?otherbeam1 ?otherbeam2)
+                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+                    (not (ClampTrajNotInCollisionWithClamp ?traj ?clamp ?beam1 ?beam2 ?otherclamp))
+                                     ))
+            )
+            (not
+              (exists (?otherbeam) (and 
+                  (BeamAtAssembled ?otherbeam)
+                  (not (ClampTrajNotInCollisionWithBeam ?traj ?clamp ?beam1 ?beam2 ?otherbeam))
+                                     ))
+            )
         )
         :effect (and
             (not (ClampAtJoint ?clamp ?beam1 ?beam2)) ;; Gripper no longer at storage
@@ -263,7 +288,7 @@
     )
 
     (:action attach_clamp_to_structure
-        :parameters (?clamp ?clamptype ?beam1 ?beam2)
+        :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
             ;; Robot is currently holding the ?clamp
             (ClampAtRobot ?clamp)
@@ -277,6 +302,22 @@
             ;; Clamp is suitable for the joint
             (ClampOfType ?clamp ?clamptype)
             (JointNeedsClampType ?beam1 ?beam2 ?clamptype)
+
+            (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            (AttachClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            (not
+              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+                    (Joint ?otherbeam1 ?otherbeam2)
+                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+                    (not (ClampTrajNotInCollisionWithClamp ?traj ?clamp ?beam1 ?beam2 ?otherclamp))
+                                     ))
+            )
+            (not
+              (exists (?otherbeam) (and 
+                  (BeamAtAssembled ?otherbeam)
+                  (not (ClampTrajNotInCollisionWithBeam ?traj ?clamp ?beam1 ?beam2 ?otherbeam))
+                                     ))
+            )
         )
         :effect (and
             (not (ClampAtRobot ?clamp)) ;; Gripper no longer at robot
