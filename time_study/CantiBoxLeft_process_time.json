@@ -1,0 +1,33 @@
+{
+    "pddl_action_average_times": {
+        "assemble_beam_by_clamping_method": 465.81122943571427,
+        "assemble_beam_by_screwing_method": 980.690708,
+        "assemble_beam_by_ground_connection": 142.754304,
+        "pick_gripper_from_storage": 115.66665294117648,
+        "place_gripper_to_storage": 184.63262452941174,
+        "pick_clamp_from_storage": 113.02020612499999,
+        "place_clamp_to_storage": 135.81372825,
+        "attach_clamp_to_joint ": 185.54921866666663,
+        "detach_clamp_from_joint": 276.7624572083333
+    },
+    "itj_action_average_time": {
+        "PickGripperFromStorageAction": 115.66665294117648,
+        "LoadBeamAction": 5.558700000000001,
+        "PickBeamWithGripperAction": 196.32991825000005,
+        "BeamPlacementWithoutClampsAction": 137.195604,
+        "RetractGripperFromBeamAction": 16.8439779,
+        "PlaceGripperToStorageAction": 184.63262452941174,
+        "PickClampFromStorageAction": 113.02020612499999,
+        "PlaceClampToStructureAction": 185.54921866666663,
+        "BeamPlacementWithClampsAction": 247.07863328571426,
+        "ManaulAssemblyAction": 95.27100000000002,
+        "PickClampFromStructureAction": 276.7624572083333,
+        "PlaceClampToStorageAction": 135.81372825,
+        "PickAndRotateBeamForAttachingScrewdriverAction": 23.99323225,
+        "OperatorAttachScrewdriverAction": 0.4320833333333333,
+        "AssembleBeamWithScrewdriversAction": 470.105257,
+        "DockWithScrewdriverAction": 181.33994675,
+        "RetractScrewdriverFromBeamAction": 352.62404474999994,
+        "PlaceScrewdriverToStorageAction": 127.97739066666668
+    }
+}

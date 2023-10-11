@@ -222,5 +222,24 @@
             "console": "integratedTerminal",
             "justMyCode": false
         },
+        {
+            "name": "Extract Executed Action Time from Log",
+            "type": "python",
+            "request": "launch",
+            "program": "time_study/extract_action_execution_time.py",
+            "args": [
+                "--process",
+                "CantiBoxLeft_process.json",
+                "CantiBoxMid_process.json",
+                "CantiBoxRight_process.json",
+                "--design_dir",
+                "220407_CantiBoxLeft",
+                "220407_CantiBoxMid",
+                "220407_CantiBoxRight",
+                "--output_to_file",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
     ]
 }
