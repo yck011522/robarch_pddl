@@ -1,0 +1,19 @@
+{
+    "assemble_action": {
+        "count": 20,
+        "total_time_s": 10729.6286521,
+        "total_time_min": 178.82714420166667
+    },
+    "gripper_action": {
+        "count": 40,
+        "total_time_s": 6005.985549411768,
+        "total_time_min": 100.0997591568628
+    },
+    "clamp_action": {
+        "count": 96,
+        "total_time_s": 17067.494646,
+        "total_time_min": 284.4582440999999
+    },
+    "overall_total_time_s": 33803.10884751177,
+    "overall_total_time_min": 563.3851474585293
+}
