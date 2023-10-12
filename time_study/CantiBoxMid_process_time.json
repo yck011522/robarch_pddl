@@ -7,7 +7,7 @@
         "place_gripper_to_storage": 207.02937039999998,
         "pick_clamp_from_storage": 77.7860587142857,
         "place_clamp_to_storage": 94.21839971428571,
-        "attach_clamp_to_joint ": 200.92860812499995,
+        "attach_clamp_to_joint": 200.92860812499995,
         "detach_clamp_from_joint": 256.87614816666667
     },
     "itj_action_average_time": {

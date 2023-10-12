@@ -3,6 +3,7 @@ from integral_timber_joints.process import *
 import json
 from compas.utilities import DataDecoder
 import numpy as np
+from integral_timber_joints.process import RobotClampAssemblyProcess
 
 
 def load_log(file_path):
@@ -40,7 +41,7 @@ def filter_dict_none_values(dict):
         if dict[key] is None:
             del dict[key]
 
-def load_process(json_path):
+def load_process(json_path): #type: (str) -> RobotClampAssemblyProcess
     process = None
     with open(json_path, 'r') as f:
         process = json.load(f, cls=DataDecoder)
