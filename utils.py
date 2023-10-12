@@ -8,6 +8,8 @@ import load_pddlstream
 from pddlstream.utils import str_from_object
 from pddlstream.language.conversion import obj_from_pddl
 from pddlstream.language.constants import is_plan, DurativeAction, Action, StreamAction, FunctionAction
+from pddlstream.algorithms.algorithm import parse_problem
+from pddlstream.algorithms.downward import get_problem, task_from_domain_problem
 
 ###########################################
 # borrowed from: https://github.com/compas-dev/compas_fab/blob/3efe608c07dc5b08653ee4132a780a3be9fb93af/src/compas_fab/backends/pybullet/utils.py#L83
@@ -37,6 +39,18 @@ def get_logger(name):
 LOGGER = get_logger('robarch_pddl')
 
 ###########################################
+
+def print_pddl_task_object_names(pddl_problem):
+    evaluations, goal_exp, domain, externals = parse_problem(
+        pddl_problem, unit_costs=True)
+    problem = get_problem(evaluations, goal_exp, domain, unit_costs=True)
+    task = task_from_domain_problem(domain, problem)
+    LOGGER.debug('='*10)
+    for task_obj, pddl_object in sorted(
+            zip(task.objects, map(lambda x: obj_from_pddl(x.name), task.objects)),
+            key=lambda x: int(x[0].name.split('v')[1])):
+        LOGGER.debug('{} : {}'.format(task_obj.name, colored_str_from_object(pddl_object.value)))
+    LOGGER.debug('='*10)
 
 def contains_number(value):
     for character in value:

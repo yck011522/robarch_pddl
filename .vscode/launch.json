@@ -217,7 +217,8 @@
                 "--output_to_console",
                 "--output_to_file",
                 "--num_elements_to_export",
-                "-1",
+                // "-1",
+                "20",
             ],
             "console": "integratedTerminal",
             "justMyCode": false

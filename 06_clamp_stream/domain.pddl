@@ -41,11 +41,14 @@
         (AssembleBeamTraj ?beam ?traj)
         (AssembleBeamNotInCollision ?traj ?heldbeam ?otherbeam)
 
-        (ClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
+        ; (ClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
         (AttachClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
         (DetachClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
-        (ClampTrajNotInCollisionWithClamp ?traj ?heldclamp ?beam1 ?beam2 ?otherclamp)
-        (ClampTrajNotInCollisionWithBeam ?traj ?heldclamp ?beam1 ?beam2 ?otherbeam)
+        (AttachClampTrajNotInCollisionWithClamp ?heldclamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2)
+        (DetachClampTrajNotInCollisionWithClamp ?heldclamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2)
+        ; (ClampTrajNotInCollisionWithBeam ?traj ?heldclamp ?beam1 ?beam2 ?otherbeam)
+
+        (UnsafeClampTraj ?clamp ?beam1 ?beam2 ?traj)
     )
 
     (:action assemble_beam_by_clamping_method
@@ -251,41 +254,19 @@
         )
     )
 
-    (:action detach_clamp_from_structure
-        :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
-        :precondition (and
-            ;; ?clamp and ?clamptype match at input 
-            (ClampOfType ?clamp ?clamptype)
-            ;; Clamp is at the joint 
-            (ClampAtJoint ?clamp ?beam1 ?beam2)
-
-            ;; Robot is not currently holding a gripper or a clamp
-            (not(exists (?anytool)
-                    (GripperAtRobot ?anytool)))
-            (not(exists (?anytool)
-                    (ClampAtRobot ?anytool)))
-
-            (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
-            (DetachClampTraj ?clamp ?beam1 ?beam2 ?traj)
-            (not
-              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
-                    (Joint ?otherbeam1 ?otherbeam2)
-                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
-                    (not (ClampTrajNotInCollisionWithClamp ?traj ?clamp ?beam1 ?beam2 ?otherclamp))
-                                     ))
-            )
-            (not
-              (exists (?otherbeam) (and 
-                  (BeamAtAssembled ?otherbeam)
-                  (not (ClampTrajNotInCollisionWithBeam ?traj ?clamp ?beam1 ?beam2 ?otherbeam))
-                                     ))
-            )
-        )
-        :effect (and
-            (not (ClampAtJoint ?clamp ?beam1 ?beam2)) ;; Gripper no longer at storage
-            (ClampAtRobot ?clamp) ;; Gripper now at robot
-        )
-    )
+    ; this is always False
+    ; 
+    ; (:derived (UnsafeClampTraj ?clamp ?beam1 ?beam2 ?traj)
+    ;     (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+    ;         (AttachClampTraj ?clamp ?beam1 ?beam2 ?traj)
+    ;         (Joint ?otherbeam1 ?otherbeam2)
+    ;         (Clamp ?otherclamp)
+    ;         (BeamAtAssembled ?otherbeam1)
+    ;         (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+    ;         (not (ClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
+    ;         )
+    ;     )
+    ; )
 
     (:action attach_clamp_to_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
@@ -303,25 +284,85 @@
             (ClampOfType ?clamp ?clamptype)
             (JointNeedsClampType ?beam1 ?beam2 ?clamptype)
 
-            (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
             (AttachClampTraj ?clamp ?beam1 ?beam2 ?traj)
             (not
-              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
-                    (Joint ?otherbeam1 ?otherbeam2)
-                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
-                    (not (ClampTrajNotInCollisionWithClamp ?traj ?clamp ?beam1 ?beam2 ?otherclamp))
-                                     ))
+              (exists (?otherclamp ?otherbeam) (and 
+                    (ClampAtJoint ?otherclamp ?beam1 ?otherbeam)
+                    (Clamp ?otherclamp)
+                    (not (= ?otherclamp ?clamp))
+                    (not (AttachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
+              ))
             )
-            (not
-              (exists (?otherbeam) (and 
-                  (BeamAtAssembled ?otherbeam)
-                  (not (ClampTrajNotInCollisionWithBeam ?traj ?clamp ?beam1 ?beam2 ?otherbeam))
-                                     ))
-            )
+
+            ; (not
+            ;   (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+            ;         (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+            ;         (Clamp ?otherclamp)
+            ;         (BeamAtAssembled ?otherbeam1)
+            ;         (Joint ?otherbeam1 ?otherbeam2)
+            ;         (not (= ?otherclamp ?clamp))
+            ;         (not (AttachClampTrajNotInCollisionWithClamp ?heldclamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
+            ;   ))
+            ; )
+
+            ; (not (UnsafeClampTraj ?clamp ?beam1 ?beam2 ?traj))
+            ; (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
+
+            ; (not
+            ;   (exists (?otherbeam) (and 
+            ;       (BeamAtAssembled ?otherbeam)
+            ;       (not (ClampTrajNotInCollisionWithBeam ?traj ?clamp ?beam1 ?beam2 ?otherbeam))
+            ;                          ))
+            ; )
         )
         :effect (and
             (not (ClampAtRobot ?clamp)) ;; Gripper no longer at robot
             (ClampAtJoint ?clamp ?beam1 ?beam2) ;; Gripper now at storage
+        )
+    )
+
+    (:action detach_clamp_from_structure
+        :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
+        :precondition (and
+            ;; ?clamp and ?clamptype match at input 
+            (ClampOfType ?clamp ?clamptype)
+            ;; Clamp is at the joint 
+            (ClampAtJoint ?clamp ?beam1 ?beam2)
+
+            ;; Robot is not currently holding a gripper or a clamp
+            (not(exists (?anytool)
+                    (GripperAtRobot ?anytool)))
+            (not(exists (?anytool)
+                    (ClampAtRobot ?anytool)))
+
+            (DetachClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            (not
+              (exists (?otherclamp ?otherbeam) (and 
+                    (ClampAtJoint ?otherclamp ?beam1 ?otherbeam)
+                    (Clamp ?otherclamp)
+                    (not (= ?otherclamp ?clamp))
+                    (not (DetachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
+              ))
+            )
+
+            ; (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            ; (not
+            ;   (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+            ;         (Joint ?otherbeam1 ?otherbeam2)
+            ;         (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+            ;         (not (ClampTrajNotInCollisionWithClamp ?traj ?clamp ?beam1 ?beam2 ?otherclamp))
+            ;                          ))
+            ; )
+            ; (not
+            ;   (exists (?otherbeam) (and 
+            ;       (BeamAtAssembled ?otherbeam)
+            ;       (not (ClampTrajNotInCollisionWithBeam ?traj ?clamp ?beam1 ?beam2 ?otherbeam))
+            ;                          ))
+            ; )
+        )
+        :effect (and
+            (not (ClampAtJoint ?clamp ?beam1 ?beam2)) ;; Gripper no longer at storage
+            (ClampAtRobot ?clamp) ;; Gripper now at robot
         )
     )
 )

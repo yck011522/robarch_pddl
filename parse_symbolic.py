@@ -103,20 +103,20 @@ def process_to_init_goal_grippers(
     """
     # * Gripper Tool
     available_gripper_types = []
-    for screwdriver in process.grippers:
+    for gripper in process.grippers:
         # Declare init and goal predicates
         init.extend([
-            ('GripperAtStorage', screwdriver.name),
-            ('GripperOfType', screwdriver.name, screwdriver.type_name),
+            ('GripperAtStorage', gripper.name),
+            ('GripperOfType', gripper.name, gripper.type_name),
         ])
         goal.extend([
-            ('GripperAtStorage', screwdriver.name),
+            ('GripperAtStorage', gripper.name),
         ])
-        available_gripper_types.append(screwdriver.type_name)
+        available_gripper_types.append(gripper.type_name)
         # Declare static predicate of gripper
         if declare_static:
             init.extend([
-                ('Gripper', screwdriver.name),
+                ('Gripper', gripper.name),
             ])
 
     # * Beam Demand Gripper
@@ -202,7 +202,7 @@ def process_to_init_goal_clamps(
         # Declare static predicate of clamp
         if declare_static:
             init.extend([
-                ('Gripper', clamp.name),
+                ('Clamp', clamp.name),
             ])
 
     # * Beams Clamp type assignment
