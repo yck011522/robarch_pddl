@@ -415,8 +415,8 @@ def get_test_fn_clamp_clamp_collision_check(
         # :inputs (?heldclamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2 ?otherclamptype)
         # Returns: ClampTrajNotInCollisionWithClamp
         LOGGER.debug('Testing clamp-clamp collision for {}-{}-{}-{}-{}-{}'.format(heldclamp, beam1, beam2, otherclamp, otherbeam1, otherbeam2))
-        # return False
-        return True
+        return False
+        # return True
 
         # set the otherbeam to the assembled position
         joint_id = (beam1, beam2)

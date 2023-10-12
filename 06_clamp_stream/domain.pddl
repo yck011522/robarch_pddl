@@ -285,25 +285,22 @@
             (JointNeedsClampType ?beam1 ?beam2 ?clamptype)
 
             (AttachClampTraj ?clamp ?beam1 ?beam2 ?traj)
-            (not
-              (exists (?otherclamp ?otherbeam) (and 
-                    (ClampAtJoint ?otherclamp ?beam1 ?otherbeam)
-                    (Clamp ?otherclamp)
-                    (not (= ?otherclamp ?clamp))
-                    (not (AttachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
-              ))
-            )
-
             ; (not
-            ;   (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
-            ;         (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+            ;   (exists (?otherclamp ?otherbeam) (and 
+            ;         (ClampAtJoint ?otherclamp ?beam1 ?otherbeam)
             ;         (Clamp ?otherclamp)
-            ;         (BeamAtAssembled ?otherbeam1)
-            ;         (Joint ?otherbeam1 ?otherbeam2)
             ;         (not (= ?otherclamp ?clamp))
-            ;         (not (AttachClampTrajNotInCollisionWithClamp ?heldclamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
+            ;         (not (AttachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
             ;   ))
             ; )
+
+            (not
+              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+                    (not (= ?otherclamp ?clamp))
+                    (not (AttachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
+                ))
+            )
 
             ; (not (UnsafeClampTraj ?clamp ?beam1 ?beam2 ?traj))
             ; (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
@@ -336,23 +333,22 @@
                     (ClampAtRobot ?anytool)))
 
             (DetachClampTraj ?clamp ?beam1 ?beam2 ?traj)
+            ; (not
+            ;   (exists (?otherclamp ?otherbeam) (and 
+            ;         (ClampAtJoint ?otherclamp ?beam1 ?otherbeam)
+            ;         (Clamp ?otherclamp)
+            ;         (not (= ?otherclamp ?clamp))
+            ;         (not (DetachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
+            ;   ))
+            ; )
             (not
-              (exists (?otherclamp ?otherbeam) (and 
-                    (ClampAtJoint ?otherclamp ?beam1 ?otherbeam)
-                    (Clamp ?otherclamp)
+              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
                     (not (= ?otherclamp ?clamp))
-                    (not (DetachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
-              ))
+                    (not (DetachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
+                ))
             )
 
-            ; (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
-            ; (not
-            ;   (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
-            ;         (Joint ?otherbeam1 ?otherbeam2)
-            ;         (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
-            ;         (not (ClampTrajNotInCollisionWithClamp ?traj ?clamp ?beam1 ?beam2 ?otherclamp))
-            ;                          ))
-            ; )
             ; (not
             ;   (exists (?otherbeam) (and 
             ;       (BeamAtAssembled ?otherbeam)
