@@ -79,7 +79,8 @@ def main():
             num_elements_to_export = args.num_elements_to_export,
             pddl_folder = pddl_folder,
             enable_stream = not args.disable_stream,
-            options=options
+            options=options,
+            problem_name = args.process[:-len('.json')]
             )
 
         set_cost_scale(1)
