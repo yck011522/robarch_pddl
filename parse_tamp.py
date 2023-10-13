@@ -16,7 +16,7 @@ from integral_timber_joints.planning.state import set_state, set_initial_state
 from load_pddlstream import HERE
 from parse_symbolic import process_to_init_goal_by_case
 from stream_samplers import get_sample_fn_plan_motion_for_beam_assembly, get_test_fn_beam_assembly_collision_check, \
-    get_sample_fn_plan_motion_for_clamp, get_test_fn_clamp_clamp_collision_check
+    get_sample_fn_plan_motion_for_clamp, get_test_fn_clamp_clamp_collision_check, get_test_fn_clamp_beam_collision_check
 from utils import LOGGER, print_pddl_task_object_names
 
 def get_pddlstream_problem(
@@ -57,7 +57,7 @@ def get_pddlstream_problem(
         if case_number == 4:
             stream_map.update(get_beam_assembly_streams(client, robot, process, options))
         elif case_number == 6 or case_number == 7:
-            # stream_map.update(get_beam_assembly_streams(client, robot, process, options))
+            stream_map.update(get_beam_assembly_streams(client, robot, process, options))
             stream_map.update(get_clamp_transfer_streams(client, robot, process, options))
     else:
         stream_map = DEBUG
@@ -80,6 +80,10 @@ def get_clamp_transfer_streams(client, robot, process, options):
     return {
             'plan_motion_for_attach_clamp':  from_sampler(get_sample_fn_plan_motion_for_clamp(client, robot, process, operation='attach', options=options)),
             'plan_motion_for_detach_clamp':  from_sampler(get_sample_fn_plan_motion_for_clamp(client, robot, process, operation='detach', options=options)),
-            'attach_clamp_clamp_collision_check': from_test(get_test_fn_clamp_clamp_collision_check(client, robot, process, options=options)),
-            'detach_clamp_clamp_collision_check': from_test(get_test_fn_clamp_clamp_collision_check(client, robot, process, options=options)),
+
+            # 'attach_clamp_clamp_collision_check': from_test(get_test_fn_clamp_clamp_collision_check(client, robot, process, options=options)),
+            # 'detach_clamp_clamp_collision_check': from_test(get_test_fn_clamp_clamp_collision_check(client, robot, process, options=options)),
+
+            'attach_clamp_beam_collision_check': from_test(get_test_fn_clamp_beam_collision_check(client, robot, process, options=options)),
+            'detach_clamp_beam_collision_check': from_test(get_test_fn_clamp_beam_collision_check(client, robot, process, options=options)),
         }

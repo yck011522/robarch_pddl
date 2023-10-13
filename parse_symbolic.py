@@ -253,6 +253,24 @@ def process_to_init_goal_scaffolding(
     return init, goal
 
 
+def process_to_init_goal_fixed_assembly_order(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        num_elements_to_export=-1,
+):
+    for i, (beam_id1, beam_id2) in enumerate(zip(process.assembly.sequence[:-1], process.assembly.sequence[1:])):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
+            break
+        #  Skip scaffolding elements
+        if process.assembly.get_assembly_method(beam_id1) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            continue
+        init.append(
+            ('AssemblyPartialOrder', beam_id1, beam_id2)
+            )
+
+    return init, goal
+
+
 # Utility functions for parsing
 
 def export_pddl(domain_name, init, goal, pddl_folder, problem_name):
@@ -332,6 +350,20 @@ def process_to_init_goal_by_case(
         init, goal = process_to_init_goal_assemblymethod(
             process, init, goal, num_elements_to_export=num_elements_to_export)
         # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
+
+    if case_number == 7:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_clamps(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_assemblymethod(
+            process, init, goal, num_elements_to_export=num_elements_to_export)
+        # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
+        init, goal = process_to_init_goal_fixed_assembly_order(process, init, goal, num_elements_to_export=num_elements_to_export)
 
     unioned_goal = And(*goal)
     return init, unioned_goal

@@ -37,6 +37,8 @@
         (AssemblyByScrewingMethod ?beam)
         (AssemblyByGroundConnection ?beam)
 
+        (AssemblyPartialOrder ?beam1 ?beam2) ;; Static - Additional Partial order of beams to be assembled
+
         ;; Predicates certified by the streams
         (AssembleBeamTraj ?beam ?traj)
         (AssembleBeamNotInCollision ?traj ?heldbeam ?otherbeam)
@@ -67,6 +69,18 @@
             ;; Gripper type matching:
             (BeamNeedsGripperType ?beam ?grippertype)
             (GripperOfType ?gripper ?grippertype)
+
+            ;; All joints with earlier beams are already assembled
+            (not (exists (?earlierbeam)(and
+                (Joint ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
+            ;; Enforce partial order of beams to be assembled
+            (not (exists (?earlierbeam)(and
+                (AssemblyPartialOrder ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
 
             ;; Logic: There should not exist a scenario where an earlierbeam ... 
             (not
@@ -120,6 +134,12 @@
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 
+            ;; Enforce partial order of beams to be assembled
+            (not (exists (?earlierbeam)(and
+                (AssemblyPartialOrder ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
             (AssembleBeamTraj ?beam ?traj)
             (not
               (exists (?otherbeam) (and 
@@ -154,6 +174,12 @@
             ;; All joints with earlier beams are already assembled
             (not (exists (?earlierbeam)(and
                 (Joint ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
+            ;; Enforce partial order of beams to be assembled
+            (not (exists (?earlierbeam)(and
+                (AssemblyPartialOrder ?earlierbeam ?beam)
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 

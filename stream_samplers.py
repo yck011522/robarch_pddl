@@ -262,6 +262,10 @@ def get_test_fn_beam_assembly_collision_check(
             client.detach_attached_collision_mesh(heldbeam, options={})
             if temp_name in client.extra_disabled_collision_links:
                 del client.extra_disabled_collision_links[temp_name]
+        if not assemble_beam_not_in_collision:
+            LOGGER.debug('Tested beam assembly IN COLLISION held {} - {}'.format(heldbeam, otherbeam))
+        else:
+            LOGGER.debug('Tested beam assembly not in collision held {} - {}'.format(heldbeam, otherbeam))
 
         return assemble_beam_not_in_collision
 
@@ -462,6 +466,108 @@ def get_test_fn_clamp_clamp_collision_check(
                 del client.extra_disabled_collision_links[temp_name]
 
         return clamp_traj_not_in_collision_with_clamp
+
+    return test_fn
+
+def get_test_fn_clamp_beam_collision_check(
+        client: PyChoreoClient, 
+        robot: Robot, 
+        process: RobotClampAssemblyProcess,
+        options=None):
+    options = options or {}
+
+    toolchanger = process.robot_toolchanger
+    flange_from_toolchanger_base = toolchanger.t_t0cf_from_tcf
+    beam_assembled_frames = {}
+    beam_grasps = {}
+    for beam_id in process.assembly.sequence:
+        # Skip scaffolding elements
+        if process.assembly.get_assembly_method(beam_id) == BeamAssemblyMethod.MANUAL_ASSEMBLY:
+            continue
+
+        # Cache all beam's frame at asssembled position
+        # assembly_wcf_final = process.get_gripper_t0cp_for_beam_at(beam_id, 'assembly_wcf_final').copy()
+        f_world_from_beam_final = process.assembly.get_beam_attribute(beam_id, 'assembly_wcf_final').copy()
+        f_world_from_beam_final.point *= 1e-3
+        beam_assembled_frames[beam_id] = f_world_from_beam_final
+
+        # Cache all grasp transformations
+        # ? different gripper might have different grasp for a beam?
+        t_gripper_tcf_from_beam = process.assembly.get_t_gripper_tcf_from_beam(beam_id)
+        beam_gripper_id = process.assembly.get_beam_attribute(beam_id, "gripper_id")
+        beam_gripper = process.tool(beam_gripper_id)
+        flange_from_beam = flange_from_toolchanger_base * beam_gripper.t_t0cf_from_tcf * t_gripper_tcf_from_beam
+        # scale the translation part of the transformation to meter
+        for k in range(3):
+            flange_from_beam[k,3] *= 1e-3
+
+        beam_grasps[beam_id] = flange_from_beam
+
+    # all clamp use the same grasp transformation from the tool changer
+    clamp_grasp = toolchanger.t_t0cf_from_tcf.copy()
+    # scale the translation part of the transformation to meter
+    for k in range(3):
+        clamp_grasp[k,3] *= 1e-3
+
+    flange_link_name = process.ROBOT_END_LINK
+    touched_robot_links = []
+    attached_object_base_link_name = None
+
+    def test_fn(heldclamp, beam1, beam2, traj, otherbeam):
+        # (?heldclamp ?beam1 ?beam2 ?traj ?otherbeam)
+        # Returns: ClampTrajNotInCollisionWithBeam
+        # return True
+
+        # set the otherbeam to the assembled position
+        clamp_traj_not_in_collision_with_beam = False
+        with pp.WorldSaver():
+            client.set_object_frame('^{}$'.format(otherbeam), beam_assembled_frames[otherbeam])
+
+            # Create attachments for the heldbeam
+            client.add_attached_collision_mesh(
+                AttachedCollisionMesh(CollisionMesh(None, heldclamp),
+                                      flange_link_name, touch_links=touched_robot_links),
+                options={'robot': robot,
+                         'attached_child_link_name': attached_object_base_link_name,
+                         'parent_link_from_child_link_transformation' : clamp_grasp,
+                         })
+
+            temp_name = 'clamp_beam_{}-{}'.format(heldclamp, otherbeam)
+            if otherbeam == beam1 or otherbeam == beam2:
+                otherbeam_bodies = client._get_bodies('^{}'.format(otherbeam))
+                heldclamp_bodies = client._get_bodies('^{}'.format(heldclamp))
+                for parent_body, child_body in product(otherbeam_bodies, heldclamp_bodies):
+                    client.extra_disabled_collision_links[temp_name].add(
+                        ((parent_body, None), (child_body, None))
+                    )
+
+            for conf in traj.points:
+                # check robot and heldbeam collision with the otherbeam using FK
+                # ! this checks a lot more than what we need here
+                # so there are rooms for acceleration, but the code will get more complicated
+                # options['diagnosis'] = True
+                clamp_traj_not_in_collision_with_beam = not client.check_collisions(robot, conf, options=options)
+                # options['diagnosis'] = False
+
+                if not clamp_traj_not_in_collision_with_beam:
+                    # early return if collision found
+                    break
+
+            # if not clamp_traj_not_in_collision_with_beam:
+            #     LOGGER.debug('Testing clamp-beam IN COLLISION for held {} at ({},{}) - {}'.format(heldclamp, beam1, beam2, otherbeam))
+            #     pp.wait_if_gui()
+
+            # clean up the attached object and ACM
+            client.detach_attached_collision_mesh(heldclamp, options={})
+            if temp_name in client.extra_disabled_collision_links:
+                del client.extra_disabled_collision_links[temp_name]
+
+        if not clamp_traj_not_in_collision_with_beam:
+            LOGGER.debug('Testing clamp-beam IN COLLISION for held {} at ({},{}) - {}'.format(heldclamp, beam1, beam2, otherbeam))
+        else:
+            LOGGER.debug('Testing clamp-beam not in collision for held {} at ({},{}) - {}'.format(heldclamp, beam1, beam2, otherbeam))
+
+        return clamp_traj_not_in_collision_with_beam
 
     return test_fn
 
