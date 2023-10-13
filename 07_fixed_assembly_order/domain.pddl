@@ -78,6 +78,7 @@
 
             ;; Enforce partial order of beams to be assembled
             (not (exists (?earlierbeam)(and
+                (Beam ?earlierbeam)
                 (AssemblyPartialOrder ?earlierbeam ?beam)
                 (not (BeamAtAssembled ?earlierbeam))
             )))
