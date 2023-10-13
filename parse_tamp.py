@@ -14,7 +14,7 @@ from integral_timber_joints.process import RobotClampAssemblyProcess
 from integral_timber_joints.planning.robot_setup import load_RFL_world, get_tolerances
 from integral_timber_joints.planning.state import set_state, set_initial_state
 from load_pddlstream import HERE
-from parse_symbolic import process_to_init_goal_by_case
+from parse_symbolic import process_to_init_goal_by_case, export_pddl
 from stream_samplers import get_sample_fn_plan_motion_for_beam_assembly, get_test_fn_beam_assembly_collision_check, \
     get_sample_fn_plan_motion_for_clamp, get_test_fn_clamp_clamp_collision_check, get_test_fn_clamp_beam_collision_check
 from utils import LOGGER, print_pddl_task_object_names
@@ -25,7 +25,8 @@ def get_pddlstream_problem(
         num_elements_to_export: int,
         pddl_folder: str,
         enable_stream=True,
-        options=None):
+        options=None,
+        problem_name = 'problem_name'):
     """Convert a Process instance into a PDDLStream formulation
     """
     options = options or {}
@@ -38,7 +39,11 @@ def get_pddlstream_problem(
 
     init, goal = process_to_init_goal_by_case(
         process, case_number, [], [], num_elements_to_export=num_elements_to_export)
-
+    
+    # Export PDDL domain file
+    export_pddl('domain_name', init,
+        goal, pddl_folder, problem_name)
+    
     if case_number in [1,2,3,5] and enable_stream:
         enable_stream = False
         LOGGER.warning('Case {} is a symbolic-only domain, stream is disabled.'.format(case_number))
