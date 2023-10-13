@@ -1,4 +1,4 @@
-(define (domain clamp_transfer)
+(define (domain fixed_assembly_order)
     (:requirements :negative-preconditions :strips :equality :disjunctive-preconditions)
     ; :derived-predicates
     (:predicates
