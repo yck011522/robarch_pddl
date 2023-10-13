@@ -68,6 +68,12 @@
             (BeamNeedsGripperType ?beam ?grippertype)
             (GripperOfType ?gripper ?grippertype)
 
+            ;; All joints with earlier beams are already assembled
+            (not (exists (?earlierbeam)(and
+                (Joint ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
             ;; Logic: There should not exist a scenario where an earlierbeam ... 
             (not
                 (exists(?earlierbeam)
@@ -271,8 +277,10 @@
     (:action attach_clamp_to_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
+            (Clamp ?clamp)
             ;; Robot is currently holding the ?clamp
             (ClampAtRobot ?clamp)
+
             ; The beam where the joint belongs to is already BeamAtAssembled
             (BeamAtAssembled ?beam1)
             (not(BeamAtStorage ?beam1))
@@ -294,13 +302,13 @@
             ;   ))
             ; )
 
-            (not
-              (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
-                    (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
-                    (not (= ?otherclamp ?clamp))
-                    (not (AttachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
-                ))
-            )
+            ; (not
+            ;   (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+            ;         (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
+            ;         (not (= ?otherclamp ?clamp))
+            ;         (not (AttachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
+            ;     ))
+            ; )
 
             ; (not (UnsafeClampTraj ?clamp ?beam1 ?beam2 ?traj))
             ; (ClampTraj ?clamp ?beam1 ?beam2 ?traj)
@@ -321,10 +329,18 @@
     (:action detach_clamp_from_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
+            (Clamp ?clamp)
             ;; ?clamp and ?clamptype match at input 
             (ClampOfType ?clamp ?clamptype)
             ;; Clamp is at the joint 
             (ClampAtJoint ?clamp ?beam1 ?beam2)
+
+            ; The beam where the joint belongs to is already BeamAtAssembled
+            (BeamAtAssembled ?beam1)
+            (not(BeamAtStorage ?beam1))
+            ; The beam where the joint belongs to is already BeamAtAssembled
+            (BeamAtAssembled ?beam2)
+            (not(BeamAtStorage ?beam2))
 
             ;; Robot is not currently holding a gripper or a clamp
             (not(exists (?anytool)
@@ -341,10 +357,22 @@
             ;         (not (DetachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?beam1 ?otherbeam))
             ;   ))
             ; )
+            
             (not
               (exists (?otherclamp ?otherbeam1 ?otherbeam2) (and 
+                    (Clamp ?otherclamp)
+                    (Beam ?otherbeam1)
+                    (Beam ?otherbeam2)
+                    (Joint ?otherbeam1 ?otherbeam2)
+                    (BeamAtAssembled ?otherbeam1)
+                    (BeamAtAssembled ?otherbeam2)
+                    (AssemblyByClampingMethod ?otherbeam2)
+
                     (ClampAtJoint ?otherclamp ?otherbeam1 ?otherbeam2)
                     (not (= ?otherclamp ?clamp))
+                    (not (= ?beam2 ?otherbeam1))
+                    (not (= ?beam2 ?otherbeam2))
+                    (not (= ?otherbeam1 ?otherbeam2))
                     (not (DetachClampTrajNotInCollisionWithClamp ?clamp ?beam1 ?beam2 ?traj ?otherclamp ?otherbeam1 ?otherbeam2))
                 ))
             )
