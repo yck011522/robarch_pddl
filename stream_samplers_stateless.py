@@ -183,16 +183,16 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
 
                 # check collisions for each conf in the path
                 path_in_collisions = False
-                # for conf_val in path[1:]:
-                #     if robot_env_collision_fn(conf_val, diagnosis=diagnosis):
-                #         path_in_collisions = True
-                #         break
-                #     # check collisions between robot and the attached beam
-                #     attachment.assign()
-                #     if pp.any_link_pair_collision(robot_uid, gantry_arm_links, attachment.child):
-                #         path_in_collisions = True
-                #         break
-                #     # TODO joint flip check
+                for conf_val in path[1:]:
+                    if robot_env_collision_fn(conf_val, diagnosis=diagnosis):
+                        path_in_collisions = True
+                        break
+                    # check collisions between robot and the attached beam
+                    attachment.assign()
+                    if pp.any_link_pair_collision(robot_uid, gantry_arm_links, attachment.child):
+                        path_in_collisions = True
+                        break
+                    # TODO joint flip check
 
                 if path_in_collisions:
                     LOGGER.debug(f'Cartesian plan {heldbeam} path collision.')
