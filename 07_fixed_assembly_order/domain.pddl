@@ -1,4 +1,4 @@
-(define (domain clamp_transfer)
+(define (domain fixed_assembly_order)
     (:requirements :negative-preconditions :strips :equality :disjunctive-preconditions)
     ; :derived-predicates
     (:predicates
@@ -37,6 +37,8 @@
         (AssemblyByScrewingMethod ?beam)
         (AssemblyByGroundConnection ?beam)
 
+        (AssemblyPartialOrder ?beam1 ?beam2) ;; Static - Additional Partial order of beams to be assembled
+
         ;; Predicates certified by the streams
         (AssembleBeamTraj ?beam ?traj)
         (AssembleBeamNotInCollision ?traj ?heldbeam ?otherbeam)
@@ -71,6 +73,13 @@
             ;; All joints with earlier beams are already assembled
             (not (exists (?earlierbeam)(and
                 (Joint ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
+            ;; Enforce partial order of beams to be assembled
+            (not (exists (?earlierbeam)(and
+                (Beam ?earlierbeam)
+                (AssemblyPartialOrder ?earlierbeam ?beam)
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 
@@ -126,6 +135,12 @@
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 
+            ;; Enforce partial order of beams to be assembled
+            (not (exists (?earlierbeam)(and
+                (AssemblyPartialOrder ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
             (AssembleBeamTraj ?beam ?traj)
             (not
               (exists (?otherbeam) (and 
@@ -160,6 +175,12 @@
             ;; All joints with earlier beams are already assembled
             (not (exists (?earlierbeam)(and
                 (Joint ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
+            ;; Enforce partial order of beams to be assembled
+            (not (exists (?earlierbeam)(and
+                (AssemblyPartialOrder ?earlierbeam ?beam)
                 (not (BeamAtAssembled ?earlierbeam))
             )))
 
@@ -263,11 +284,9 @@
     (:action attach_clamp_to_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
-            (Clamp ?clamp)
             ;; Robot is currently holding the ?clamp
             (Clamp ?clamp)
             (ClampAtRobot ?clamp)
-
             ; The beam where the joint belongs to is already BeamAtAssembled
             (BeamAtAssembled ?beam1)
             (not(BeamAtStorage ?beam1))
@@ -305,19 +324,13 @@
     (:action detach_clamp_from_structure
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
-            (Clamp ?clamp)
             ;; ?clamp and ?clamptype match at input 
             (Clamp ?clamp)
             (ClampOfType ?clamp ?clamptype)
             ;; Clamp is at the joint 
             (ClampAtJoint ?clamp ?beam1 ?beam2)
-
-            ; The beam where the joint belongs to is already BeamAtAssembled
             (BeamAtAssembled ?beam1)
-            (not(BeamAtStorage ?beam1))
-            ; The beam where the joint belongs to is already BeamAtAssembled
             (BeamAtAssembled ?beam2)
-            (not(BeamAtStorage ?beam2))
 
             ;; Robot is not currently holding a gripper or a clamp
             (not(exists (?anytool)

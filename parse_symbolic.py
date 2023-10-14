@@ -1,4 +1,5 @@
 import os
+from more_itertools import last
 from termcolor import colored
 import argparse
 
@@ -22,9 +23,11 @@ from export_pddl_utils import pddl_problem_with_original_names
 
 
 PDDL_FOLDERS = ['01_beam_assembly', '02_joint_partial_order', '03_gripper_switch',
-                '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream']
-DOMAIN_NAMES = ['beam_assembly', 'joint_partial_order',
-                'gripper_switch', 'assembly_stream', 'clamp_transfer', 'clamp_stream']
+                '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream', 
+                '07_fixed_assembly_order']
+DOMAIN_NAMES = ['beam_assembly', 'joint_partial_order', 'gripper_switch', 
+                'assembly_stream', 'clamp_transfer', 'clamp_stream',
+                'fixed_assembly_order']
 
 
 def init_with_cost(manipulate_cost=5.0):
@@ -253,6 +256,34 @@ def process_to_init_goal_scaffolding(
     return init, goal
 
 
+def process_to_init_goal_fixed_assembly_order(
+        process: RobotClampAssemblyProcess,
+        init=[], goal=[],
+        num_elements_to_export=-1,
+):
+    last_beam = None
+    for i, (beam_id1, beam_id2) in enumerate(zip(process.assembly.sequence[:-1], process.assembly.sequence[1:])):
+        if (num_elements_to_export > -1) & (i >= num_elements_to_export):
+            break
+        beam1_is_manual =  process.assembly.get_assembly_method(beam_id1) == BeamAssemblyMethod.MANUAL_ASSEMBLY
+        beam2_is_manual =  process.assembly.get_assembly_method(beam_id2) == BeamAssemblyMethod.MANUAL_ASSEMBLY
+        if (not beam1_is_manual) and (not beam2_is_manual):
+            init.append(
+                ('AssemblyPartialOrder', beam_id1, beam_id2)
+                )
+        elif (beam1_is_manual) and (beam2_is_manual):
+            continue
+        elif (not beam1_is_manual) and (beam2_is_manual):
+            last_beam = beam_id1
+        elif (beam1_is_manual) and (not beam2_is_manual):
+            init.append(
+                ('AssemblyPartialOrder', last_beam, beam_id2)
+                )
+            last_beam = None
+
+    return init, goal
+
+
 # Utility functions for parsing
 
 def export_pddl(domain_name, init, goal, pddl_folder, problem_name):
@@ -332,6 +363,20 @@ def process_to_init_goal_by_case(
         init, goal = process_to_init_goal_assemblymethod(
             process, init, goal, num_elements_to_export=num_elements_to_export)
         # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
+
+    if case_number == 7:
+        init, goal = process_to_init_goal_beams(
+            process, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_joints(
+            process,  init, goal, num_elements_to_export=num_elements_to_export)
+        init, goal = process_to_init_goal_grippers(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_clamps(
+            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
+        init, goal = process_to_init_goal_assemblymethod(
+            process, init, goal, num_elements_to_export=num_elements_to_export)
+        # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
+        init, goal = process_to_init_goal_fixed_assembly_order(process, init, goal, num_elements_to_export=num_elements_to_export)
 
     unioned_goal = And(*goal)
     return init, unioned_goal

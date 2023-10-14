@@ -1,4 +1,4 @@
-(define (stream clamp_transfer)
+(define (stream fixed_assembly_order)
   (:stream plan_motion_for_beam_assembly
     :inputs (?beam ?grippertype)
     :domain (and 
@@ -26,7 +26,6 @@
         )
     :outputs (?traj)
     :certified (AttachClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
-        ; (ClampTraj ?heldclamp ?beam1 ?beam2 ?traj)
   )
   
   (:stream plan_motion_for_detach_clamp
