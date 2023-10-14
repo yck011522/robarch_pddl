@@ -80,10 +80,8 @@ from stream_samplers_stateless import get_sample_fn_plan_motion_for_beam_assembl
 
 def get_beam_assembly_streams(client, robot, process, options):
     return {
-            'plan_motion_for_beam_assembly':  from_gen_fn(get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process, options=options)),
+            'plan_motion_for_beam_assembly':  from_sampler(get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process, options=options)),
             'beam_assembly_collision_check': from_test(get_test_fn_beam_assembly_collision_check_stateless(client, robot, process, options=options)),
-            # 'plan_motion_for_beam_assembly':  from_sampler(get_sample_fn_plan_motion_for_beam_assembly(client, robot, process, options=options)),
-            # 'beam_assembly_collision_check': from_test(get_test_fn_beam_assembly_collision_check(client, robot, process, options=options)),
         }
 
 def get_clamp_transfer_streams(client, robot, process, options):

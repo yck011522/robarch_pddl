@@ -31,7 +31,7 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
 
     toolchanger = process.robot_toolchanger
     flange_from_toolchanger_base = toolchanger.t_t0cf_from_tcf
-    gantry_attempts = options.get('gantry_attempts', int(1e8))
+    gantry_attempts = options.get('gantry_attempts', 500) #int(1e8)
     reachable_range = options.get('reachable_range', (0.2, 2.4))
 
     beam_target_poses = defaultdict(list)
@@ -137,7 +137,7 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
     diagnosis = options.get('diagnosis', False)
     # diagnosis = True 
 
-    def traj_generator(heldbeam: str, gripper_type: str):
+    def traj_sampler_fn(heldbeam: str, gripper_type: str):
         # plan a motion to follow the target frames for inserting beam_id
         # while ensuring there is no collision between
         # - robot self collisions
@@ -208,12 +208,13 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
                         joint_names=jt_traj_pts[0].joint_names, start_configuration=jt_traj_pts[0], fraction=1.0)
                     LOGGER.debug(f'Cartesian plan {heldbeam} sample found after {gantry_iter} gantry iters.')
 
-                    yield (trajectory,)
+                    # yield (trajectory,)
+                    return (trajectory,)
         else:
-            LOGGER.debug(f'Cartesian plan running out of samples {gantry_iter}')
-            input()
+            # LOGGER.debug(f'Cartesian plan running out of samples {gantry_iter}')
+            raise ValueError(f'Cartesian plan running out of samples {gantry_iter}')
 
-    return traj_generator
+    return traj_sampler_fn
 
 ##########################################
 
@@ -310,10 +311,7 @@ def get_sample_fn_plan_motion_for_clamp(client, robot, process, operation: str, 
     toolchanger = process.robot_toolchanger
 
     # all clamp use the same grasp transformation from the tool changer
-    clamp_grasp = toolchanger.t_t0cf_from_tcf.copy()
-    # scale the translation part of the transformation to meter
-    for k in range(3):
-        clamp_grasp[k,3] *= 1e-3
+    clamp_grasp = pose_from_transformation(toolchanger.t_t0cf_from_tcf, scale=1e-3)
 
     target_frames_from_joint_id = defaultdict(list)
     for i, beam_id in enumerate(process.assembly.sequence):
@@ -356,7 +354,7 @@ def get_sample_fn_plan_motion_for_clamp(client, robot, process, operation: str, 
                 end_t0cf_frame.point *= 1e-3
                 target_frames_from_joint_id[joint_id].append(end_t0cf_frame)
 
-    gantry_attempts = options.get('gantry_attempts', 100)
+    gantry_attempts = options.get('gantry_attempts', int(1e8))
     reachable_range = options.get('reachable_range', (0.2, 2.4))
     sample_ik_fn = _get_sample_bare_arm_ik_fn(client, robot)
     gantry_arm_joint_names = robot.get_configurable_joint_names(group=GANTRY_ARM_GROUP)

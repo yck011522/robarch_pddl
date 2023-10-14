@@ -64,7 +64,7 @@ def main():
         # 'debug' : args.debug,
         'diagnosis' : args.diagnosis,
         # 'reinit_tool' : args.reinit_tool,
-        'gantry_attempts' : int(1e8), # infinite attempts
+        'gantry_attempts' : 500, 
     }
 
     #########
@@ -94,7 +94,7 @@ def main():
                          max_planner_time=INF,
                         #  debug=args.debug, 
                          verbose=0, 
-                        # search_sample_ratio=1, # the desired ratio of sample time / search time
+                        search_sample_ratio=1.5, # the desired ratio of sample time / search time
                         )
 
         plan, cost, evaluations = solution
