@@ -24,3 +24,36 @@ Many development systems already satisfy FastDownward's dependencies. If `./buil
 If necessary, see FastDownward's documentation for more detailed installation instructions:
 
 http://www.fast-downward.org/ObtainingAndRunningFastDownward
+
+## Running the Experiments
+
+### TAMP Cases (E01, E02, E03, E05)
+
+```
+python plan_pddl.py --planning_cases 1 --process_file_name CantiBoxLeft_process --symbolic_planner fd --debug --output_to_file 
+```
+
+It is also possible to run all the cases:
+```
+python plan_pddl.py --planning_cases 1 2 3 5 --process_file_name CantiBoxLeft_process CantiBoxMid_process CantiBoxRight_process --symbolic_planner fd --debug --output_to_file 
+```
+### PDDL Cases (E04, E06, E07)
+The following code can be used to run the planning case one by one:
+```
+python plan_tamp.py --planning_case 4 --process CantiBoxLeft_process.json --design_dir 220407_CantiBoxLeft --debug --output_to_console --output_to_file --num_elements_to_export -1 
+python plan_tamp.py --planning_case 4 --process CantiBoxMid_process.json --design_dir 220407_CantiBoxMid --debug --output_to_console --output_to_file --num_elements_to_export -1 
+python plan_tamp.py --planning_case 4 --process CantiBoxRight_process.json --design_dir 220407_CantiBoxRight --debug --output_to_console --output_to_file --num_elements_to_export -1 
+```
+
+## Results
+Note that the planning time will not be idendical everytime. The TAMP consis of a random search. The planning time is highly dependent on the speed of the computer. 
+
+The planning time is written in the console after planning. For example the following planning took 112.67s in total. (run_time = sample_time + search_time)
+
+```
+Sampling for up to -95.222 seconds
+Sampling while complexity <= 2
+2023-10-12 17:32:45,507 | robarch_pddl | DEBUG | Cartesian plan sample found after 4 gantry iters.
+2023-10-12 17:32:46,515 | robarch_pddl | DEBUG | Cartesian plan sample found after 0 gantry iters.
+Summary: {complexity: 2, cost: 24.000, evaluations: 396, iterations: 7, length: 2, run_time: 112.670, sample_time: 107.825, search_time: 4.845, skeletons: 5, solutions: 1, solved: True, timeout: False}
+```
