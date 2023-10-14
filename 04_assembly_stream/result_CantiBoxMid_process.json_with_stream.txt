@@ -1,28 +1,28 @@
   1: pick_gripper_from_storage g3 PG1500
-  2: assemble_beam_with_gripper b1 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202C0B06DA0>
-  3: assemble_beam_with_gripper b6 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE8B4E10>
-  4: assemble_beam_with_gripper b0 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE9BDA90>
-  5: assemble_beam_with_gripper b5 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE8BDDD8>
-  6: assemble_beam_with_gripper b7 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE58A0B8>
-  7: assemble_beam_with_gripper b12 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202C0AC5048>
-  8: assemble_beam_with_gripper b11 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE636DD8>
+  2: assemble_beam_with_gripper b1 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E9528198>
+  3: assemble_beam_with_gripper b6 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E9520160>
+  4: assemble_beam_with_gripper b0 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E941D9E8>
+  5: assemble_beam_with_gripper b5 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E92B8B70>
+  6: assemble_beam_with_gripper b7 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E91706A0>
+  7: assemble_beam_with_gripper b12 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E90C9B70>
+  8: assemble_beam_with_gripper b11 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E93D7748>
   9: place_gripper_to_storage g3 PG1500
  10: pick_gripper_from_storage g2 PG1000
- 11: assemble_beam_with_gripper b3 g2 PG1000 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE897DA0>
- 12: assemble_beam_with_gripper b2 g2 PG1000 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE782860>
+ 11: assemble_beam_with_gripper b3 g2 PG1000 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E90A3710>
+ 12: assemble_beam_with_gripper b2 g2 PG1000 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E918D278>
  13: place_gripper_to_storage g2 PG1000
  14: pick_gripper_from_storage g3 PG1500
- 15: assemble_beam_with_gripper b9 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE63C438>
- 16: assemble_beam_with_gripper b16 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE9A82E8>
- 17: assemble_beam_with_gripper b8 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE960E10>
- 18: assemble_beam_with_gripper b4 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE61F9E8>
- 19: assemble_beam_with_gripper b10 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE643080>
- 20: assemble_beam_with_gripper b18 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE63C0F0>
- 21: assemble_beam_with_gripper b14 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE5130F0>
+ 15: assemble_beam_with_gripper b16 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E91C0668>
+ 16: assemble_beam_with_gripper b9 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E91362B0>
+ 17: assemble_beam_with_gripper b8 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E90F0B00>
+ 18: assemble_beam_with_gripper b4 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E9104C50>
+ 19: assemble_beam_with_gripper b18 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E9093978>
+ 20: assemble_beam_with_gripper b14 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E912A080>
+ 21: assemble_beam_with_gripper b10 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E94E0780>
  22: place_gripper_to_storage g3 PG1500
  23: pick_gripper_from_storage s4 SL1_G200
- 24: assemble_beam_with_gripper b17 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BEA0D400>
- 25: assemble_beam_with_gripper b13 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE9A8278>
- 26: assemble_beam_with_gripper b19 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE9B72B0>
- 27: assemble_beam_with_gripper b15 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000202BE5CB278>
+ 24: assemble_beam_with_gripper b17 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E917B240>
+ 25: assemble_beam_with_gripper b13 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E90EA048>
+ 26: assemble_beam_with_gripper b19 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E9130E80>
+ 27: assemble_beam_with_gripper b15 s4 SL1_G200 <compas_fab.robots.trajectory.JointTrajectory object at 0x00000242E90F6DD8>
  28: place_gripper_to_storage s4 SL1_G200
