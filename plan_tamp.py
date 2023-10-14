@@ -64,7 +64,7 @@ def main():
         # 'debug' : args.debug,
         'diagnosis' : args.diagnosis,
         # 'reinit_tool' : args.reinit_tool,
-        'gantry_attempts' : 500, # number of gantry sampling attempts when computing IK
+        'gantry_attempts' : int(1e8), # infinite attempts
     }
 
     #########
