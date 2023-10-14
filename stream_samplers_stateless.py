@@ -124,6 +124,7 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
 
     body_name_from_id=client._name_from_body_id
     gantry_arm_joints = pp.joints_from_names(robot_uid, gantry_arm_joint_names)
+    gantry_arm_links = pp.get_moving_links(robot_uid, gantry_arm_joints)
     robot_env_collision_fn = pp.get_collision_fn(robot_uid, gantry_arm_joints, obstacles=static_obstacles,
                                     attachments=[], 
                                     self_collisions=True,
@@ -133,8 +134,8 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
                                     body_name_from_id=body_name_from_id,
                                     distance_threshold=collision_distance_threshold, max_distance=max_distance)
 
-    # diagnosis = options.get('diagnosis', False)
-    diagnosis = True
+    diagnosis = options.get('diagnosis', False)
+    # diagnosis = True
  
     def traj_generator(heldbeam: str, gripper_type: str):
         # plan a motion to follow the target frames for inserting beam_id
@@ -153,39 +154,34 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
             for arm_conf_val in arm_conf_vals:
                 if arm_conf_val is None:
                     continue
-                # starting_full_conf = Configuration(list(base_conf.joint_values) + list(arm_conf_val),
-                #     gantry_arm_joint_types, gantry_arm_joint_names)
-                # start_traj_pt = JointTrajectoryPoint(joint_values=list(base_conf.joint_values) + list(arm_conf_val),
-                    # joint_types=gantry_arm_joint_types)
                 start_conf_value = list(base_conf.joint_values) + list(arm_conf_val)
 
                 # check collisions for this starting configuration among
                 #     - robot self-collision 
                 #     - between (robot links) and obstacles
                 if robot_env_collision_fn(start_conf_value, diagnosis=diagnosis):
-                    LOGGER.debug('Cartesian plan: robot env collision.')
+                    LOGGER.debug(f'Cartesian plan {heldbeam}: robot env collision.')
                     continue
 
                 # check collisions between robot and the attached beam
-                # if in collision, continue
-                # attachment.assign()
+                attachment.assign()
                 # if pp.pairwise_collision(robot_uid, attachment.child):
-                #     if diagnosis:
-                #         LOGGER.debug('Cartesian plan: robot beam collision.')
-                #         # body1, links1 = pp.expand_links(robot_uid)
-                #         robot_links = pp.get_moving_links(robot_uid, gantry_arm_joints)
-                #         for link1 in robot_links:
-                #             cr = pp.pairwise_link_collision_info(robot_uid, link1, attachment.child, pp.BASE_LINK)
-                #             pp.draw_collision_diagnosis(cr, body_name_from_id=body_name_from_id)
-                #     continue
+                if pp.any_link_pair_collision(robot_uid, gantry_arm_links, attachment.child):
+                    LOGGER.debug(f'Cartesian plan {heldbeam}: robot beam collision.')
+                    if diagnosis:
+                    # if True:
+                        cr = pp.any_link_pair_collision_info(robot_uid, gantry_arm_links, attachment.child)
+                        pp.draw_collision_diagnosis(cr, body_name_from_id=body_name_from_id)
+                    continue
 
                 path = plan_cartesian_motion_from_links(robot_uid, selected_links, tool_link,
                     beam_target_poses[heldbeam], custom_limits=pb_custom_limits, get_sub_conf=True, options=options)
 
                 if path is None:
+                    LOGGER.debug(f'Cartesian plan {heldbeam}: no path found.')
                     continue
 
-                # check collisions for each conf in the path, if in collision, continue
+                # TODO check collisions for each conf in the path, if in collision, continue
                 path_in_collisions = False
                 # for conf_val in path:
                 #     if in_collision(conf):
@@ -200,12 +196,15 @@ def get_sample_fn_plan_motion_for_beam_assembly_stateless(client, robot, process
                     for i, arm_conf_value in enumerate(path):
                         jt_traj_pt = JointTrajectoryPoint(joint_values=arm_conf_value, joint_names=gantry_arm_joint_names, joint_types=gantry_arm_joint_types)
                         jt_traj_pt.time_from_start = Duration(i*1,0)
-                    jt_traj_pts.append(jt_traj_pt)
+                        jt_traj_pts.append(jt_traj_pt)
                     trajectory = JointTrajectory(trajectory_points=jt_traj_pts,
                         joint_names=jt_traj_pts[0].joint_names, start_configuration=jt_traj_pts[0], fraction=1.0)
-                    LOGGER.debug('Cartesian plan sample found after {} gantry iters.'.format(gantry_iter))
+                    LOGGER.debug(f'Cartesian plan {heldbeam} sample found after {gantry_iter} gantry iters.')
 
                     yield (trajectory,)
+        else:
+            LOGGER.debug(f'Cartesian plan running out of samples {gantry_iter}')
+            input()
 
     return traj_generator
 
@@ -305,7 +304,7 @@ def get_test_fn_beam_assembly_collision_check_stateless(
 
     def test_fn(traj, heldbeam: str, otherbeam: str):
         # Returns: AssembleBeamNotInCollision
-        # return True
+        return True
 
         assemble_beam_not_in_collision = True
         heldbeam_body = beam_bodies[heldbeam]
