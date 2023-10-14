@@ -76,7 +76,8 @@ def get_pddlstream_problem(
 
     return pddlstream_problem
 
-from stream_samplers_stateless import get_sample_fn_plan_motion_for_beam_assembly_stateless, get_test_fn_beam_assembly_collision_check_stateless
+from stream_samplers_stateless import get_sample_fn_plan_motion_for_beam_assembly_stateless, get_test_fn_beam_assembly_collision_check_stateless, \
+get_sample_fn_plan_motion_for_clamp_stateless, get_test_fn_clamp_beam_collision_check_stateless
 
 def get_beam_assembly_streams(client, robot, process, options):
     return {
@@ -86,12 +87,12 @@ def get_beam_assembly_streams(client, robot, process, options):
 
 def get_clamp_transfer_streams(client, robot, process, options):
     return {
-            'plan_motion_for_attach_clamp':  from_sampler(get_sample_fn_plan_motion_for_clamp(client, robot, process, operation='attach', options=options)),
-            'plan_motion_for_detach_clamp':  from_sampler(get_sample_fn_plan_motion_for_clamp(client, robot, process, operation='detach', options=options)),
+            'plan_motion_for_attach_clamp':  from_sampler(get_sample_fn_plan_motion_for_clamp_stateless(client, robot, process, operation='attach', options=options)),
+            'plan_motion_for_detach_clamp':  from_sampler(get_sample_fn_plan_motion_for_clamp_stateless(client, robot, process, operation='detach', options=options)),
 
             # 'attach_clamp_clamp_collision_check': from_test(get_test_fn_clamp_clamp_collision_check(client, robot, process, options=options)),
             # 'detach_clamp_clamp_collision_check': from_test(get_test_fn_clamp_clamp_collision_check(client, robot, process, options=options)),
 
-            'attach_clamp_beam_collision_check': from_test(get_test_fn_clamp_beam_collision_check(client, robot, process, options=options)),
-            'detach_clamp_beam_collision_check': from_test(get_test_fn_clamp_beam_collision_check(client, robot, process, options=options)),
+            'attach_clamp_beam_collision_check': from_test(get_test_fn_clamp_beam_collision_check_stateless(client, robot, process, options=options)),
+            'detach_clamp_beam_collision_check': from_test(get_test_fn_clamp_beam_collision_check_stateless(client, robot, process, options=options)),
         }
