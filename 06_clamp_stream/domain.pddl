@@ -304,10 +304,7 @@
             )
                         
             ;; Robot is not currently holding anything
-            (not(exists (?anytool)
-                    (GripperAtRobot ?anytool)))
-            (not(exists (?anybeam)
-                    (BeamAtRobot ?anybeam)))
+            (not(RobotHasTool))
         )
         :effect (and
             (not (ClampAtStorage ?clamp)) ;; Gripper no longer at storage
