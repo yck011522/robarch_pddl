@@ -290,7 +290,6 @@
 
             (not
               (exists (?otherbeam) (and 
-                  (not (= ?otherbeam ?beam1))
                   (BeamAtAssembled ?otherbeam)
                   (not (AttachClampTrajNotInCollisionWithBeam ?clamp ?beam1 ?beam2 ?traj ?otherbeam))
               ))
