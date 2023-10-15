@@ -7,6 +7,8 @@
         (BeamAtStorage ?beam)
         (BeamAtRobot ?beam)
         (BeamAtAssembled ?beam)
+        
+        (RobotHasTool)
 
         ;; Joints are defined as the intersection of two beams
         ;; Joints are implied to have order, so (Joint ?beam1 ?beam2) is not the same as (Joint ?beam2 ?beam1)
@@ -29,6 +31,8 @@
         (ClampAtRobot ?clamp)
         (ClampAtJoint ?clamp ?beam1 ?beam2)
 
+        (JointToolFulfilled ?beam1 ?beam2)
+
         ;; Predicates for clamp type matching
         (ClampOfType ?clamp ?clamptype) ;; Static
         (JointNeedsClampType ?beam1 ?beam2 ?clamptype) ;; Static
@@ -38,7 +42,8 @@
         (AssemblyByGroundConnection ?beam)
 
     )
-    (:action assemble_beam_by_clamping_method
+     (:action assemble_beam_by_clamping_method
+        ; :parameters (?beam ?gripper ?grippertype)
         :parameters (?beam ?gripper ?grippertype)
         :precondition (and
             ;; Beam is at storage
@@ -54,6 +59,12 @@
             (BeamNeedsGripperType ?beam ?grippertype)
             (GripperOfType ?gripper ?grippertype)
 
+            ;; All joints with earlier beams are already assembled
+            (not (exists (?earlierbeam)(and
+                (Joint ?earlierbeam ?beam)
+                (not (BeamAtAssembled ?earlierbeam))
+            )))
+
             ;; Logic: There should not exist a scenario where an earlierbeam ... 
             (not
                 (exists(?earlierbeam)
@@ -61,18 +72,26 @@
                         ;; Formed a joint with the current beam ... 
                         (Joint ?earlierbeam ?beam)
                         ;; and that joint is demanding some clamp (declared by JointNeedsClamp) ...
-                        (exists(?clamptype) (JointNeedsClampType ?earlierbeam ?beam ?clamptype))
-                        ;; and not a single clamp had been attached to that joint
-                        (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
-                        ; (NotASingleClampAtJoint ?earlierbeam ?beam)
+                        (not (JointToolFulfilled ?earlierbeam ?beam))
                     )
                 )
             )
-            
             )
         :effect (and
             (not (BeamAtStorage ?beam)) ;; Beam no longer at storage
             (BeamAtAssembled ?beam) ;; Beam now at assembled
+        )
+    )
+     
+    (:action fulfil_joint_tool
+        :parameters (?beam1 ?beam2)
+        :precondition (and
+            (Joint ?beam1 ?beam2)
+            (not (JointToolFulfilled ?beam1 ?beam2))
+            (not (exists (?clamptype) (JointNeedsClampType ?beam1 ?beam2 ?clamptype)))
+        )
+        :effect (and
+            (JointToolFulfilled ?beam1 ?beam2)
         )
     )
        
@@ -141,19 +160,14 @@
             ;; ?gripper is at storage
             (GripperAtStorage ?gripper)
             ;; Robot is not currently holding a gripper or a clamp
-            (not
-                (exists
-                    (?anytool)
-                    (or (GripperAtRobot ?anytool)(ClampAtRobot ?anytool))))
-            ;; Robot is not currently holding a beam
-            (not
-                (exists
-                    (?beam)
-                    (BeamAtRobot ?beam)))
+            (not (RobotHasTool))
+
         )
         :effect (and
             (not (GripperAtStorage ?gripper)) ;; Gripper no longer at storage
             (GripperAtRobot ?gripper) ;; Gripper now at robot
+            (RobotHasTool)
+
         )
     )
 
@@ -162,84 +176,31 @@
         :precondition (and
             ;; ?gripper and ?grippertype match at input 
             (GripperOfType ?gripper ?grippertype)
+
             ;; Robot is currently holding ?gripper
             (GripperAtRobot ?gripper)
-            ;; Robot is not currently holding a beam
-            (not
-                (exists
-                    (?beam)
-                    (BeamAtRobot ?beam)))
+            (RobotHasTool)
+
         )
         :effect (and
             (not (GripperAtRobot ?gripper)) ;; Gripper no longer at robot
             (GripperAtStorage ?gripper) ;; Gripper now at storage
+            (not (RobotHasTool))
+
         )
     )
   
     ; Clamp Manipulation
     ; ------------------
 
-    (:action retrieve_clamp_from_storage
-        :parameters (?clamp ?clamptype)
+    (:action clamp_from_storage_to_joint
+        :parameters (?clamp ?clamptype ?beam1 ?beam2)
         :precondition (and
             ;; ?clamp and ?clamptype match at input 
             (ClampOfType ?clamp ?clamptype)
             ;; Clamp is at storage
             (ClampAtStorage ?clamp)
 
-            ;; Robot is not currently holding anything
-            (not(exists (?anytool)
-                    (GripperAtRobot ?anytool)))
-            (not(exists (?anytool)
-                    (ClampAtRobot ?anytool)))
-            (not(exists (?anybeam)
-                    (BeamAtRobot ?anybeam)))
-        )
-        :effect (and
-            (not (ClampAtStorage ?clamp)) ;; Gripper no longer at storage
-            (ClampAtRobot ?clamp) ;; Gripper now at robot
-        )
-    )
-
-    (:action store_clamp_to_storage
-        :parameters (?clamp ?clamptype)
-        :precondition (and
-            ;; ?clamp and ?clamptype match at input 
-            (ClampOfType ?clamp ?clamptype)
-            ;; Robot is currently holding the ?clamp
-            (ClampAtRobot ?clamp)
-        )
-        :effect (and
-            (not (ClampAtRobot ?clamp)) ;; Gripper no longer at robot
-            (ClampAtStorage ?clamp) ;; Gripper now at storage
-        )
-    )
-
-    (:action detach_clamp_from_structure
-        :parameters (?clamp ?clamptype ?beam1 ?beam2)
-        :precondition (and
-            ;; ?clamp and ?clamptype match at input 
-            (ClampOfType ?clamp ?clamptype)
-            ;; Clamp is at the joint 
-            (ClampAtJoint ?clamp ?beam1 ?beam2)
-
-            ;; Robot is not currently holding a gripper or a clamp
-            (not(exists (?anytool)
-                    (GripperAtRobot ?anytool)))
-            (not(exists (?anytool)
-                    (ClampAtRobot ?anytool)))
-        )
-        :effect (and
-            (not (ClampAtJoint ?clamp ?beam1 ?beam2)) ;; Gripper no longer at storage
-            (ClampAtRobot ?clamp) ;; Gripper now at robot
-        )
-    )
-
-    (:action attach_clamp_to_structure
-        :parameters (?clamp ?clamptype ?beam1 ?beam2)
-        :precondition (and
-            ;; Robot is currently holding the ?clamp
-            (ClampAtRobot ?clamp)
             ; The beam where the joint belongs to is already BeamAtAssembled
             (BeamAtAssembled ?beam1)
             (not(BeamAtStorage ?beam1))
@@ -250,10 +211,71 @@
             ;; Clamp is suitable for the joint
             (ClampOfType ?clamp ?clamptype)
             (JointNeedsClampType ?beam1 ?beam2 ?clamptype)
+                        
+            ;; Robot is not currently holding anything
+            (not(RobotHasTool))
         )
         :effect (and
-            (not (ClampAtRobot ?clamp)) ;; Gripper no longer at robot
-            (ClampAtJoint ?clamp ?beam1 ?beam2) ;; Gripper now at storage
+            (not (ClampAtStorage ?clamp)) ;; Gripper no longer at storage
+            (ClampAtJoint ?clamp ?beam1 ?beam2) ;; Gripper now at joint
+            (JointToolFulfilled ?beam1 ?beam2)
         )
     )
+
+        (:action clamp_from_joint_to_storage
+        :parameters (?clamp ?clamptype ?beam1 ?beam2)
+        :precondition (and
+            
+            ;; ?clamp and ?clamptype match at input 
+            (Clamp ?clamp)
+            (ClampOfType ?clamp ?clamptype)
+            ;; Clamp is at the joint 
+            (ClampAtJoint ?clamp ?beam1 ?beam2)
+            (BeamAtAssembled ?beam1)
+            (BeamAtAssembled ?beam2)
+
+            ;; Robot is not currently holding a gripper or a clamp
+            (not (RobotHasTool))
+
+        )
+        :effect (and
+            (not (ClampAtJoint ?clamp ?beam1 ?beam2)) ;; Gripper no longer at robot
+            (ClampAtStorage ?clamp) ;; Gripper now at storage
+        )
+    )
+
+    (:action clamp_from_joint_to_joint
+        :parameters (?clamp ?clamptype ?beam_prev_1 ?beam_prev_2 ?beam_next_1 ?beam_next_2)
+        :precondition (and
+            
+            ;; ?clamp and ?clamptype match at input 
+            (Clamp ?clamp)
+            (ClampOfType ?clamp ?clamptype)
+            
+            ;; Clamp is at the joint 
+            (ClampAtJoint ?clamp ?beam_prev_1 ?beam_prev_2)
+            (BeamAtAssembled ?beam_prev_1)
+            (BeamAtAssembled ?beam_prev_2)
+
+            ;; Robot is not currently holding a gripper or a clamp
+            (not (RobotHasTool))
+
+            ; The beam where the joint belongs to is already BeamAtAssembled
+            (BeamAtAssembled ?beam_next_1)
+            (not(BeamAtStorage ?beam_next_1))
+            ; The beam where the next joint belongs to is not yet assembled
+            (BeamAtStorage ?beam_next_2)
+            (not(BeamAtAssembled ?beam_next_2))
+
+            ;; Clamp is suitable for the joint
+            (ClampOfType ?clamp ?clamptype)
+            (JointNeedsClampType ?beam_next_1 ?beam_next_2 ?clamptype)
+)
+        :effect (and
+            (not (ClampAtJoint ?clamp ?beam_prev_1 ?beam_prev_2)) ;; Gripper no longer at robot
+            (ClampAtJoint ?clamp ?beam_next_1 ?beam_next_2) ;; Gripper now at storage
+            (JointToolFulfilled ?beam_next_1 ?beam_next_2)
+        )
+    )
+
 )
