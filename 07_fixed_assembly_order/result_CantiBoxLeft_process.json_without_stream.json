@@ -1,0 +1,20 @@
+[
+    {
+        "seq_n": 0,
+        "actions": [
+            {
+                "act_n": 0,
+                "action_name": "pick_gripper_from_storage",
+                "args": [
+                    "g3",
+                    "PG1500"
+                ]
+            },
+            {
+                "act_n": 1,
+                "action_name": "assemble_beam_by_ground_connection",
+                "args": [
+                    "b1",
+                    "g3",
+                    "PG1500",
+                    

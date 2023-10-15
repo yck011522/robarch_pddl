@@ -264,6 +264,7 @@ def get_test_fn_beam_assembly_collision_check_stateless(
 
     def test_fn(traj, heldbeam: str, otherbeam: str):
         # Returns: AssembleBeamNotInCollision
+        LOGGER.debug("Entering fn: get_test_fn_beam_assembly_collision_check_stateless")
 
         assemble_beam_not_in_collision = True
         heldbeam_body = beam_bodies[heldbeam]
@@ -411,6 +412,7 @@ def get_sample_fn_plan_motion_for_clamp_stateless(client, robot, process, operat
         # - robot self collisions
         # - robot and the heldclamp
         joint_id = (beam1, beam2)
+        LOGGER.debug("Entering fn: get_sample_fn_plan_motion_for_clamp_stateless")
 
         # Create attachments for the heldbeam
         attachment = pp.Attachment(robot_uid, tool_attach_link, clamp_grasp, clamp_bodies[heldclamp])
@@ -538,6 +540,9 @@ def get_test_fn_clamp_beam_collision_check_stateless(
         # (?heldclamp ?beam1 ?beam2 ?traj ?otherbeam)
         # Returns: ClampTrajNotInCollisionWithBeam
 
+        LOGGER.debug("Entering fn: get_test_fn_clamp_beam_collision_check_stateless")
+
+
         clamp_traj_not_in_collision_with_beam = True
         heldclamp_body = clamp_bodies[heldclamp]
         otherbeam_body = beam_bodies[otherbeam]
@@ -562,17 +567,17 @@ def get_test_fn_clamp_beam_collision_check_stateless(
                 break
 
             # * check between the heldclamp and the otherbeam
-            if otherbeam not in [beam1, beam2] and pp.pairwise_collision(attachment.child, otherbeam_body):
-                # LOGGER.debug(f'Clamp traj {heldclamp} colliding with {otherbeam} at {(beam1, beam2)}')
-                if diagnosis:
-                # if True:
-                    clamp_joints = pp.get_movable_joints(heldclamp_body)
-                    clamp_movable_links = pp.get_moving_links(heldclamp_body, clamp_joints)
-                    cr = pp.any_link_pair_collision_info(heldclamp_body, clamp_movable_links, otherbeam_body)
-                    pp.draw_collision_diagnosis(cr, body_name_from_id=body_name_from_id)
+            # if otherbeam not in [beam1, beam2] and pp.pairwise_collision(attachment.child, otherbeam_body):
+            #     # LOGGER.debug(f'Clamp traj {heldclamp} colliding with {otherbeam} at {(beam1, beam2)}')
+            #     if diagnosis:
+            #     # if True:
+            #         clamp_joints = pp.get_movable_joints(heldclamp_body)
+            #         clamp_movable_links = pp.get_moving_links(heldclamp_body, clamp_joints)
+            #         cr = pp.any_link_pair_collision_info(heldclamp_body, clamp_movable_links, otherbeam_body)
+            #         pp.draw_collision_diagnosis(cr, body_name_from_id=body_name_from_id)
 
-                clamp_traj_not_in_collision_with_beam = False
-                break
+            #     clamp_traj_not_in_collision_with_beam = False
+            #     break
 
         if not clamp_traj_not_in_collision_with_beam:
             LOGGER.debug('Tested clamp {} at {} IN COLLISION held {} - for {}'.format(heldclamp, (beam1, beam2), otherbeam, traj))

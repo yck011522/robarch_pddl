@@ -10,6 +10,7 @@ from pddlstream.utils import INF
 from pddlstream.language.constants import print_plan, is_plan
 from pddlstream.utils import flatten, Profiler, SEPARATOR, inf_generator, INF
 from pddlstream.algorithms.meta import solve
+from pddlstream.algorithms.serialized import solve_serialized
 from integral_timber_joints.planning.parsing import parse_process
 
 from utils import LOGGER, print_itj_pddl_plan, save_plan_text, save_plan_dict
@@ -85,7 +86,19 @@ def main():
 
         set_cost_scale(1)
         # with Profiler(num=25):
-        solution = solve(pddlstream_problem,
+        # solution = solve(pddlstream_problem,
+        #                  max_time=INF,
+        #                  unit_costs=not args.costs,
+        #                  success_cost=INF,
+        #                 #  unit_efforts=True,
+        #                 #  effort_weight=effort_weight,
+        #                  max_planner_time=INF,
+        #                 #  debug=args.debug, 
+        #                  verbose=0, 
+        #                 search_sample_ratio=1.5, # the desired ratio of sample time / search time
+        #                 )
+        
+        solution = solve_serialized(pddlstream_problem,
                          max_time=INF,
                          unit_costs=not args.costs,
                          success_cost=INF,
@@ -96,6 +109,21 @@ def main():
                          verbose=0, 
                         search_sample_ratio=1.5, # the desired ratio of sample time / search time
                         )
+        
+        # solution = solve(pddlstream_problem,
+        #                  max_time=INF,
+        #                  unit_costs=not args.costs,
+        #                  success_cost=INF,
+        #                 #  unit_efforts=True,
+        #                 #  effort_weight=effort_weight,
+        #                  max_planner_time=INF,
+        #                 #  debug=args.debug, 
+        #                  debug=True, 
+        #                  verbose=1, 
+        #                 # search_sample_ratio=1.5, # the desired ratio of sample time / search time
+        #                 max_skeletons=1, 
+        #                 search_sample_ratio=INF,
+        #                 )
 
         plan, cost, evaluations = solution
         plan_success = is_plan(plan)

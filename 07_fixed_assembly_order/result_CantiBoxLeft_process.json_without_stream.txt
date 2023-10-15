@@ -1,0 +1,82 @@
+  1: pick_gripper_from_storage g3 PG1500
+  2: assemble_beam_by_ground_connection b1 g3 PG1500 @traj0
+  3: assemble_beam_by_ground_connection b0 g3 PG1500 @traj1
+  4: place_gripper_to_storage g3 PG1500
+  5: clamp_from_storage_to_joint c3 CL3M b0 b2 @traj3
+  6: pick_gripper_from_storage g3 PG1500
+  7: assemble_beam_by_clamping_method b2 g3 PG1500 @traj2
+  8: place_gripper_to_storage g3 PG1500
+  9: clamp_from_storage_to_joint c1 CL3 b1 b3 @traj5
+ 10: pick_gripper_from_storage g3 PG1500
+ 11: assemble_beam_by_clamping_method b3 g3 PG1500 @traj4
+ 12: place_gripper_to_storage g3 PG1500
+ 13: clamp_from_storage_to_joint c4 CL3M b2 b4 @traj8
+ 14: clamp_from_joint_to_joint c1 CL3 b1 b3 b3 b4 @traj9 @traj7
+ 15: pick_gripper_from_storage g3 PG1500
+ 16: assemble_beam_by_clamping_method b4 g3 PG1500 @traj6
+ 17: place_gripper_to_storage g3 PG1500
+ 18: clamp_from_joint_to_joint c3 CL3M b0 b2 b3 b9 @traj13 @traj11
+ 19: clamp_from_joint_to_joint c1 CL3 b3 b4 b2 b9 @traj14 @traj12
+ 20: pick_gripper_from_storage g3 PG1500
+ 21: assemble_beam_by_clamping_method b9 g3 PG1500 @traj10
+ 22: place_gripper_to_storage g3 PG1500
+ 23: clamp_from_joint_to_joint c3 CL3M b3 b9 b0 b5 @traj16 @traj17
+ 24: pick_gripper_from_storage g3 PG1500
+ 25: assemble_beam_by_clamping_method b5 g3 PG1500 @traj15
+ 26: place_gripper_to_storage g3 PG1500
+ 27: clamp_from_joint_to_joint c3 CL3M b0 b5 b2 b6 @traj20 @traj19
+ 28: clamp_from_joint_to_joint c1 CL3 b2 b9 b5 b6 @traj21 @traj22
+ 29: pick_gripper_from_storage g3 PG1500
+ 30: assemble_beam_by_clamping_method b6 g3 PG1500 @traj18
+ 31: place_gripper_to_storage g3 PG1500
+ 32: clamp_from_storage_to_joint c2 CL3 b1 b7 @traj24
+ 33: pick_gripper_from_storage g3 PG1500
+ 34: assemble_beam_by_clamping_method b7 g3 PG1500 @traj23
+ 35: place_gripper_to_storage g3 PG1500
+ 36: clamp_from_joint_to_joint c3 CL3M b2 b6 b7 b12 @traj29 @traj26
+ 37: clamp_from_joint_to_joint c1 CL3 b5 b6 b5 b12 @traj28 @traj27
+ 38: pick_gripper_from_storage g3 PG1500
+ 39: assemble_beam_by_clamping_method b12 g3 PG1500 @traj25
+ 40: place_gripper_to_storage g3 PG1500
+ 41: clamp_from_joint_to_joint c1 CL3 b5 b12 b5 b13 @traj33 @traj34
+ 42: clamp_from_joint_to_joint c2 CL3 b1 b7 b7 b13 @traj32 @traj31
+ 43: pick_gripper_from_storage g3 PG1500
+ 44: assemble_beam_by_clamping_method b13 g3 PG1500 @traj30
+ 45: place_gripper_to_storage g3 PG1500
+ 46: clamp_from_joint_to_joint c3 CL3M b7 b12 b7 b8 @traj39 @traj37
+ 47: clamp_from_joint_to_joint c1 CL3 b5 b13 b3 b8 @traj38 @traj36
+ 48: pick_gripper_from_storage g3 PG1500
+ 49: assemble_beam_by_clamping_method b8 g3 PG1500 @traj35
+ 50: place_gripper_to_storage g3 PG1500
+ 51: clamp_from_joint_to_joint c1 CL3 b3 b8 b3 b10 @traj41 @traj42
+ 52: clamp_from_joint_to_joint c3 CL3M b7 b8 b2 b10 @traj43 @traj44
+ 53: pick_gripper_from_storage g3 PG1500
+ 54: assemble_beam_by_clamping_method b10 g3 PG1500 @traj40
+ 55: place_gripper_to_storage g3 PG1500
+ 56: pick_gripper_from_storage g2 PG1000
+ 57: assemble_beam_by_screwing_method b11 g2 PG1000 @traj45
+ 58: place_gripper_to_storage g2 PG1000
+ 59: clamp_from_joint_to_joint c1 CL3 b3 b10 b5 b14 @traj49 @traj50
+ 60: clamp_from_joint_to_joint c2 CL3 b7 b13 b7 b14 @traj47 @traj48
+ 61: pick_gripper_from_storage g3 PG1500
+ 62: assemble_beam_by_clamping_method b14 g3 PG1500 @traj46
+ 63: place_gripper_to_storage g3 PG1500
+ 64: pick_gripper_from_storage g2 PG1000
+ 65: assemble_beam_by_screwing_method b15 g2 PG1000 @traj51
+ 66: place_gripper_to_storage g2 PG1000
+ 67: clamp_from_joint_to_joint c3 CL3M b2 b10 b2 b16 @traj54 @traj55
+ 68: clamp_from_joint_to_joint c4 CL3M b2 b4 b5 b16 @traj56 @traj53
+ 69: pick_gripper_from_storage g3 PG1500
+ 70: assemble_beam_by_clamping_method b16 g3 PG1500 @traj52
+ 71: assemble_beam_by_screwing_method b17 g3 PG1500 @traj57
+ 72: place_gripper_to_storage g3 PG1500
+ 73: clamp_from_joint_to_joint c1 CL3 b5 b14 b3 b18 @traj60 @traj62
+ 74: clamp_from_joint_to_joint c2 CL3 b7 b14 b7 b18 @traj59 @traj61
+ 75: pick_gripper_from_storage g3 PG1500
+ 76: assemble_beam_by_clamping_method b18 g3 PG1500 @traj58
+ 77: assemble_beam_by_screwing_method b19 g3 PG1500 @traj63
+ 78: place_gripper_to_storage g3 PG1500
+ 79: clamp_from_joint_to_storage c1 CL3 b3 b18 @traj64
+ 80: clamp_from_joint_to_storage c2 CL3 b7 b18 @traj65
+ 81: clamp_from_joint_to_storage c3 CL3M b2 b16 @traj66
+ 82: clamp_from_joint_to_storage c4 CL3M b5 b16 @traj67

@@ -35,6 +35,8 @@
         (ClampOfType ?clamp ?clamptype) ;; Static
         (JointNeedsClampType ?beam1 ?beam2 ?clamptype) ;; Static
 
+        (JointToolFulfilled ?beam1 ?beam2)
+
         (AssemblyByClampingMethod ?beam)
         (AssemblyByScrewingMethod ?beam)
         (AssemblyByGroundConnection ?beam)
@@ -92,10 +94,7 @@
                         ;; Formed a joint with the current beam ... 
                         (Joint ?earlierbeam ?beam)
                         ;; and that joint is demanding some clamp (declared by JointNeedsClamp) ...
-                        (exists(?clamptype) (JointNeedsClampType ?earlierbeam ?beam ?clamptype))
-                        ;; and not a single clamp had been attached to that joint
-                        (not (exists(?clamp)(ClampAtJoint ?clamp ?earlierbeam ?beam)))
-                        ; (NotASingleClampAtJoint ?earlierbeam ?beam)
+                        (not (JointToolFulfilled ?earlierbeam ?beam))
                     )
                 )
             )
@@ -113,7 +112,19 @@
             (BeamAtAssembled ?beam) ;; Beam now at assembled
         )
     )
-       
+
+    (:action fulfil_joint_tool
+        :parameters (?beam1 ?beam2)
+        :precondition (and
+            (Joint ?beam1 ?beam2)
+            (not (JointToolFulfilled ?beam1 ?beam2))
+            (not (exists (?clamptype) (JointNeedsClampType ?beam1 ?beam2 ?clamptype)))
+        )
+        :effect (and
+            (JointToolFulfilled ?beam1 ?beam2)
+        )
+    )
+    
     (:action assemble_beam_by_screwing_method
         ; :parameters (?beam ?gripper ?grippertype)
         :parameters (?beam ?gripper ?grippertype ?traj)
@@ -240,7 +251,7 @@
     )
   
     ; Clamp Manipulation
-;     ; ------------------
+    ; ------------------
 ;    (:action retrieve_clamp_from_storage
 ;         :parameters (?clamp ?clamptype)
 ;         :precondition (and
@@ -264,7 +275,7 @@
 ;     )
    
 
-    (:action clamp_from_storage_to_structure
+    (:action clamp_from_storage_to_joint
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
             ;; ?clamp and ?clamptype match at input 
@@ -301,6 +312,7 @@
         :effect (and
             (not (ClampAtStorage ?clamp)) ;; Gripper no longer at storage
             (ClampAtJoint ?clamp ?beam1 ?beam2) ;; Gripper now at joint
+            (JointToolFulfilled ?beam1 ?beam2)
         )
     )
 
@@ -323,7 +335,7 @@
 
 
 
-    (:action clamp_from_structure_to_storage
+    (:action clamp_from_joint_to_storage
         :parameters (?clamp ?clamptype ?beam1 ?beam2 ?traj)
         :precondition (and
             
@@ -384,6 +396,7 @@
               (exists (?otherbeam) (and 
                   (BeamAtAssembled ?otherbeam)
                   (not (DetachClampTrajNotInCollisionWithBeam ?clamp ?beam_prev_1 ?beam_prev_2 ?traj_detach ?otherbeam))
+                ;   (not (AttachClampTrajNotInCollisionWithBeam ?clamp ?beam_next_1 ?beam_next_2 ?traj_attach ?otherbeam))
               ))
             )
 
@@ -399,21 +412,19 @@
             (JointNeedsClampType ?beam_next_1 ?beam_next_2 ?clamptype)
 
             ;; Trajectory not in collision
-            (AttachClampTraj ?clamp ?beam_next_1 ?beam_next_2 ?traj_attach)
+            (AttachClampTraj ?clamp ?beam_next_1 ?beam_next_2 ?traj_attach)                     
             (not
               (exists (?otherbeam) (and 
                   (BeamAtAssembled ?otherbeam)
+                ;   (not (DetachClampTrajNotInCollisionWithBeam ?clamp ?beam_prev_1 ?beam_prev_2 ?traj_detach ?otherbeam))
                   (not (AttachClampTrajNotInCollisionWithBeam ?clamp ?beam_next_1 ?beam_next_2 ?traj_attach ?otherbeam))
               ))
             )
-                        
-
-            
-
         )
         :effect (and
             (not (ClampAtJoint ?clamp ?beam_prev_1 ?beam_prev_2)) ;; Gripper no longer at robot
             (ClampAtJoint ?clamp ?beam_next_1 ?beam_next_2) ;; Gripper now at storage
+            (JointToolFulfilled ?beam_next_1 ?beam_next_2)
         )
     )
 

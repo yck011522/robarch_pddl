@@ -1,68 +1,82 @@
   1: pick_gripper_from_storage g3 PG1500
-  2: assemble_beam_by_ground_connection b1 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB255465C0>
-  3: assemble_beam_by_ground_connection b0 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23825C88>
+  2: assemble_beam_by_ground_connection b1 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9E0AFC8>
+  3: assemble_beam_by_ground_connection b0 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9F40948>
   4: place_gripper_to_storage g3 PG1500
-  5: retrieve_clamp_from_storage c4 CL3M
-  6: attach_clamp_to_structure c4 CL3M b0 b2 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2557CC50>
-  7: retrieve_clamp_from_storage c1 CL3
-  8: attach_clamp_to_structure c1 CL3 b1 b3 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB253BD198>
-  9: pick_gripper_from_storage g3 PG1500
- 10: assemble_beam_by_clamping_method b2 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB1D68E9B0>
- 11: assemble_beam_by_clamping_method b3 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2382B940>
+  5: clamp_from_storage_to_joint c3 CL3M b0 b2 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D7F608>
+  6: pick_gripper_from_storage g3 PG1500
+  7: assemble_beam_by_clamping_method b2 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD8C465C8>
+  8: place_gripper_to_storage g3 PG1500
+  9: clamp_from_storage_to_joint c1 CL3 b1 b3 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FD9BC8>
+ 10: pick_gripper_from_storage g3 PG1500
+ 11: assemble_beam_by_clamping_method b3 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FD9688>
  12: place_gripper_to_storage g3 PG1500
- 13: detach_clamp_from_structure c4 CL3M b0 b2 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB258C2BA8>
- 14: attach_clamp_to_structure c4 CL3M b2 b4 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB25546780>
- 15: detach_clamp_from_structure c1 CL3 b1 b3 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB240D5C50>
- 16: attach_clamp_to_structure c1 CL3 b3 b4 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB268E4240>
- 17: pick_gripper_from_storage g3 PG1500
- 18: assemble_beam_by_clamping_method b4 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2385B668>
- 19: place_gripper_to_storage g3 PG1500
- 20: detach_clamp_from_structure c1 CL3 b3 b4 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB25269940>
- 21: attach_clamp_to_structure c1 CL3 b2 b9 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23AFE470>
- 22: detach_clamp_from_structure c4 CL3M b2 b4 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB241DFD68>
- 23: attach_clamp_to_structure c4 CL3M b3 b9 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23857630>
- 24: retrieve_clamp_from_storage c3 CL3M
- 25: attach_clamp_to_structure c3 CL3M b0 b5 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB25356710>
- 26: pick_gripper_from_storage g3 PG1500
- 27: assemble_beam_by_clamping_method b9 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB236AC160>
- 28: assemble_beam_by_clamping_method b5 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2382BDD8>
- 29: place_gripper_to_storage g3 PG1500
- 30: detach_clamp_from_structure c1 CL3 b2 b9 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23819EF0>
- 31: attach_clamp_to_structure c1 CL3 b1 b7 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23EEE550>
- 32: detach_clamp_from_structure c3 CL3M b0 b5 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2527E208>
- 33: store_clamp_to_storage c3 CL3M
- 34: retrieve_clamp_from_storage c2 CL3
- 35: attach_clamp_to_structure c2 CL3 b5 b6 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2524B710>
- 36: detach_clamp_from_structure c4 CL3M b3 b9 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23BF3898>
- 37: attach_clamp_to_structure c4 CL3M b2 b6 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB268C3E48>
+ 13: clamp_from_storage_to_joint c4 CL3M b2 b4 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA1B2848>
+ 14: clamp_from_joint_to_joint c1 CL3 b1 b3 b3 b4 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA1CA948> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD8C85C88>
+ 15: pick_gripper_from_storage g3 PG1500
+ 16: assemble_beam_by_clamping_method b4 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD8D5F8C8>
+ 17: place_gripper_to_storage g3 PG1500
+ 18: clamp_from_joint_to_joint c3 CL3M b0 b2 b3 b9 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA29BFC8> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9EC2488>
+ 19: clamp_from_joint_to_joint c1 CL3 b3 b4 b2 b9 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FB5608> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA19A588>
+ 20: pick_gripper_from_storage g3 PG1500
+ 21: assemble_beam_by_clamping_method b9 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA106D88>
+ 22: place_gripper_to_storage g3 PG1500
+ 23: clamp_from_joint_to_joint c3 CL3M b3 b9 b0 b5 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD8C2FEC8> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA329108>
+ 24: pick_gripper_from_storage g3 PG1500
+ 25: assemble_beam_by_clamping_method b5 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9DDAA48>
+ 26: place_gripper_to_storage g3 PG1500
+ 27: clamp_from_joint_to_joint c3 CL3M b0 b5 b2 b6 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FF3B88> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9EDF988>
+ 28: clamp_from_joint_to_joint c1 CL3 b2 b9 b5 b6 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD8C85DC8> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D303C8>
+ 29: pick_gripper_from_storage g3 PG1500
+ 30: assemble_beam_by_clamping_method b6 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9F24548>
+ 31: place_gripper_to_storage g3 PG1500
+ 32: clamp_from_storage_to_joint c2 CL3 b1 b7 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FE4588>
+ 33: pick_gripper_from_storage g3 PG1500
+ 34: assemble_beam_by_clamping_method b7 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA3EFE08>
+ 35: place_gripper_to_storage g3 PG1500
+ 36: clamp_from_joint_to_joint c3 CL3M b2 b6 b7 b12 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA0B4248> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA3DA3C8>
+ 37: clamp_from_joint_to_joint c1 CL3 b5 b6 b5 b12 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA0B7B48> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA0B7E88>
  38: pick_gripper_from_storage g3 PG1500
- 39: assemble_beam_by_clamping_method b6 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23825C50>
- 40: assemble_beam_by_clamping_method b7 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2382B198>
- 41: place_gripper_to_storage g3 PG1500
- 42: detach_clamp_from_structure c1 CL3 b1 b7 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB25269CF8>
- 43: attach_clamp_to_structure c1 CL3 b5 b13 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2527E7B8>
- 44: detach_clamp_from_structure c4 CL3M b2 b6 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23ACEBA8>
- 45: attach_clamp_to_structure c4 CL3M b7 b12 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2375AE48>
- 46: detach_clamp_from_structure c2 CL3 b5 b6 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2526DCC0>
- 47: attach_clamp_to_structure c2 CL3 b5 b12 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB238D8DD8>
+ 39: assemble_beam_by_clamping_method b12 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D587C8>
+ 40: place_gripper_to_storage g3 PG1500
+ 41: clamp_from_joint_to_joint c1 CL3 b5 b12 b5 b13 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD8C78408> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA4A6208>
+ 42: clamp_from_joint_to_joint c2 CL3 b1 b7 b7 b13 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA14E088> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9F05988>
+ 43: pick_gripper_from_storage g3 PG1500
+ 44: assemble_beam_by_clamping_method b13 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA033E08>
+ 45: place_gripper_to_storage g3 PG1500
+ 46: clamp_from_joint_to_joint c4 CL3M b2 b4 b7 b8 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA0E3588> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D93608>
+ 47: clamp_from_joint_to_joint c2 CL3 b7 b13 b3 b8 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D74D88> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D93EC8>
  48: pick_gripper_from_storage g3 PG1500
- 49: assemble_beam_by_clamping_method b12 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23828668>
+ 49: assemble_beam_by_clamping_method b8 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA2C89C8>
  50: place_gripper_to_storage g3 PG1500
- 51: detach_clamp_from_structure c4 CL3M b7 b12 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2393BCC0>
- 52: attach_clamp_to_structure c4 CL3M b7 b8 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB1E221D30>
- 53: detach_clamp_from_structure c2 CL3 b5 b12 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23D8FEB8>
- 54: attach_clamp_to_structure c2 CL3 b7 b13 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23EC8E10>
- 55: pick_gripper_from_storage g3 PG1500
- 56: assemble_beam_by_clamping_method b13 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2385E9B0>
- 57: place_gripper_to_storage g3 PG1500
- 58: detach_clamp_from_structure c2 CL3 b7 b13 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2537EA20>
- 59: store_clamp_to_storage c2 CL3
- 60: detach_clamp_from_structure c1 CL3 b5 b13 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23D15F98>
- 61: attach_clamp_to_structure c1 CL3 b3 b8 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB25269710>
- 62: pick_gripper_from_storage g3 PG1500
- 63: assemble_beam_by_clamping_method b8 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23828A90>
- 64: place_gripper_to_storage g3 PG1500
- 65: detach_clamp_from_structure c1 CL3 b3 b8 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB2526D748>
- 66: store_clamp_to_storage c1 CL3
- 67: detach_clamp_from_structure c4 CL3M b7 b8 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001FB23EC8A58>
- 68: store_clamp_to_storage c4 CL3M
+ 51: clamp_from_joint_to_joint c2 CL3 b3 b8 b3 b10 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA89B208> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA02E948>
+ 52: clamp_from_joint_to_joint c4 CL3M b7 b8 b2 b10 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9F029C8> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA614F88>
+ 53: pick_gripper_from_storage g3 PG1500
+ 54: assemble_beam_by_clamping_method b10 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FD6C08>
+ 55: place_gripper_to_storage g3 PG1500
+ 56: pick_gripper_from_storage g2 PG1000
+ 57: assemble_beam_by_screwing_method b11 g2 PG1000 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA593B88>
+ 58: place_gripper_to_storage g2 PG1000
+ 59: clamp_from_joint_to_joint c2 CL3 b3 b10 b5 b14 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA0E3E08> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA401348>
+ 60: clamp_from_joint_to_joint c1 CL3 b5 b13 b7 b14 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA487448> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FCE5C8>
+ 61: pick_gripper_from_storage g3 PG1500
+ 62: assemble_beam_by_clamping_method b14 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9EDA048>
+ 63: place_gripper_to_storage g3 PG1500
+ 64: pick_gripper_from_storage g2 PG1000
+ 65: assemble_beam_by_screwing_method b15 g2 PG1000 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9E90488>
+ 66: place_gripper_to_storage g2 PG1000
+ 67: clamp_from_joint_to_joint c4 CL3M b2 b10 b5 b16 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCE1DC6D48> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCE42A8888>
+ 68: clamp_from_joint_to_joint c3 CL3M b7 b12 b2 b16 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9FEDD88> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCE4439F08>
+ 69: pick_gripper_from_storage g3 PG1500
+ 70: assemble_beam_by_clamping_method b16 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9EB5D48>
+ 71: assemble_beam_by_screwing_method b17 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCE43ECC08>
+ 72: place_gripper_to_storage g3 PG1500
+ 73: clamp_from_joint_to_joint c1 CL3 b7 b14 b3 b18 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9E89F88> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDB0F8748>
+ 74: clamp_from_joint_to_joint c2 CL3 b5 b14 b7 b18 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDAAB2D08> <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA017208>
+ 75: pick_gripper_from_storage g3 PG1500
+ 76: assemble_beam_by_clamping_method b18 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9DAE7C8>
+ 77: assemble_beam_by_screwing_method b19 g3 PG1500 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDCC03048>
+ 78: place_gripper_to_storage g3 PG1500
+ 79: clamp_from_joint_to_storage c1 CL3 b3 b18 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA799108>
+ 80: clamp_from_joint_to_storage c2 CL3 b7 b18 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCD9D52C08>
+ 81: clamp_from_joint_to_storage c3 CL3M b2 b16 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA8CD448>
+ 82: clamp_from_joint_to_storage c4 CL3M b5 b16 <compas_fab.robots.trajectory.JointTrajectory object at 0x000001BCDA8AEA48>
