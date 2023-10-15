@@ -1,4 +1,4 @@
-(define (domain fixed_assembly_order)
+(define (domain clamp_stream)
     (:requirements :negative-preconditions :strips :equality :disjunctive-preconditions)
     ; :derived-predicates
     (:predicates

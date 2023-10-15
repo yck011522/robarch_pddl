@@ -62,7 +62,7 @@ def get_pddlstream_problem(
         stream_map = {}
         if case_number == 4:
             stream_map.update(get_beam_assembly_streams(client, robot, process, options))
-        elif case_number == 6 or case_number == 7:
+        elif case_number == 6:
             stream_map.update(get_beam_assembly_streams(client, robot, process, options))
             stream_map.update(get_clamp_transfer_streams(client, robot, process, options))
     else:

@@ -23,11 +23,11 @@ from export_pddl_utils import pddl_problem_with_original_names
 
 
 PDDL_FOLDERS = ['01_beam_assembly', '02_joint_partial_order', '03_gripper_switch',
-                '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream', 
-                '07_fixed_assembly_order']
+                '04_assembly_stream', '05_clamp_transfer', '06_clamp_stream'
+                ]
 DOMAIN_NAMES = ['beam_assembly', 'joint_partial_order', 'gripper_switch', 
                 'assembly_stream', 'clamp_transfer', 'clamp_stream',
-                'fixed_assembly_order']
+                ]
 
 
 def init_with_cost(manipulate_cost=5.0):
@@ -363,19 +363,6 @@ def process_to_init_goal_by_case(
         init, goal = process_to_init_goal_assemblymethod(
             process, init, goal, num_elements_to_export=num_elements_to_export)
         # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
-
-    if case_number == 7:
-        init, goal = process_to_init_goal_beams(
-            process, num_elements_to_export=num_elements_to_export, declare_static=True)
-        init, goal = process_to_init_goal_joints(
-            process,  init, goal, num_elements_to_export=num_elements_to_export)
-        init, goal = process_to_init_goal_grippers(
-            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
-        init, goal = process_to_init_goal_clamps(
-            process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True)
-        init, goal = process_to_init_goal_assemblymethod(
-            process, init, goal, num_elements_to_export=num_elements_to_export)
-        # init, goal = process_to_init_goal_scaffolding(process, init, goal, num_elements_to_export=num_elements_to_export, declare_static=True) # Probably not necessary
         init, goal = process_to_init_goal_fixed_assembly_order(process, init, goal, num_elements_to_export=num_elements_to_export)
 
     unioned_goal = And(*goal)
@@ -411,7 +398,7 @@ if __name__ == '__main__':
     domain_names = DOMAIN_NAMES
 
     # Create PDDL problem from process and export
-    for case_number in range(1, 7):
+    for case_number in range(1, 6):
         if case_number in args.planning_cases:
             # Extract init and goal
             init, unioned_goal = process_to_init_goal_by_case(

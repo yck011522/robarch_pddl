@@ -1,4 +1,4 @@
-(define (stream fixed_assembly_order)
+(define (stream clamp_stream)
   (:stream plan_motion_for_beam_assembly
     :inputs (?beam ?grippertype)
     :domain (and 
