@@ -17,6 +17,7 @@ from utils import LOGGER, print_itj_pddl_plan, save_plan_text, save_plan_dict
 from parse_symbolic import PDDL_FOLDERS
 from parse_tamp import get_pddlstream_problem
 
+import time
 ##################################
 
 def main():
@@ -97,7 +98,7 @@ def main():
         #                  verbose=0, 
         #                 search_sample_ratio=1.5, # the desired ratio of sample time / search time
         #                 )
-        
+        start_time = time.time()
         solution = solve_serialized(pddlstream_problem,
                          max_time=INF,
                          unit_costs=not args.costs,
@@ -109,6 +110,7 @@ def main():
                          verbose=0, 
                         search_sample_ratio=1.5, # the desired ratio of sample time / search time
                         )
+        end_time = time.time()
         
         # solution = solve(pddlstream_problem,
         #                  max_time=INF,
@@ -148,8 +150,12 @@ def main():
                 dict_result_file_name = 'result_' + args.process + '_' + with_stream + '.json'
                 save_plan_dict(plan, pddl_folder, dict_result_file_name)
                 LOGGER.info('Plan Json result saved to {}.'.format(dict_result_file_name))
+                
+                LOGGER.info('Planning time: {} s'.format(end_time - start_time))
         else:
             LOGGER.info('No plan found, no result saved.')
+
+
 
 if __name__ == '__main__':
     main()
