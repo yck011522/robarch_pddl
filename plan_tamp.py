@@ -151,7 +151,7 @@ def main():
                 save_plan_dict(plan, pddl_folder, dict_result_file_name)
                 LOGGER.info('Plan Json result saved to {}.'.format(dict_result_file_name))
                 
-                LOGGER.info('Planning time: {} s'.format(end_time - start_time))
+            LOGGER.info('Planning time: {} s'.format(end_time - start_time))
         else:
             LOGGER.info('No plan found, no result saved.')
 
